@@ -8,11 +8,15 @@ Gateway:
   path: Gateway_image
 Velociraptor_Server:
   path: Velociraptor_Server_image
-linux_user_host:
-  path: linux_user_host_image
+linux_user_host1:
+  path: linux_user_host_image1
+linux_user_host2:
+  path: linux_user_host_image2
 linux_decoy_host:
   path: linux_decoy_host_image
-windows_user_host:
-  path: windows_user_host_image
+windows_user_host1:
+  path: windows_user_host_image1
+windows_user_host2:
+  path: windows_user_host_image2
 OP_Server:
   path: OP_Server_image

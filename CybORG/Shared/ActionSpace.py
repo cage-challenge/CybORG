@@ -159,6 +159,5 @@ class ActionSpace:
                     if "ID" in session and session['Agent'] in self.agent:
                         if "Type" in session and (session["Type"] == SessionType.MSF_SERVER or session["Type"] == SessionType.VELOCIRAPTOR_SERVER or session["Type"] == SessionType.RED_ABSTRACT_SESSION or session["Type"] == SessionType.GREY_SESSION):
                             self.server_session[session["ID"]] = known
-                        else:
-                            # assume if not a server session then its a client session
-                            self.client_session[session["ID"]] = known
+
+                        self.client_session[session["ID"]] = known

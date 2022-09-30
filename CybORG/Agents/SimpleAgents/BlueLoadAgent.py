@@ -8,6 +8,7 @@ from CybORG.Agents.Wrappers.EnumActionWrapper import EnumActionWrapper
 from CybORG.Agents.Wrappers.FixedFlatWrapper import FixedFlatWrapper
 from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
 from CybORG.Agents.Wrappers.ReduceActionSpaceWrapper import ReduceActionSpaceWrapper
+from CybORG.Agents.Wrappers import ChallengeWrapper
 
 class BlueLoadAgent(BaseAgent):
     # agent that loads a StableBaselines3 PPO model file
@@ -31,7 +32,7 @@ class BlueLoadAgent(BaseAgent):
         if self.model is None:
             path = str(inspect.getfile(CybORG))
             path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'
-            cyborg = OpenAIGymWrapper('Blue', EnumActionWrapper(FixedFlatWrapper(ReduceActionSpaceWrapper(CybORG(path, 'sim')))))
+            cyborg = ChallengeWrapper(env=CybORG(path, 'sim'), agent_name='Blue')
             self.model = PPO('MlpPolicy', cyborg)
         action, _states = self.model.predict(observation)
         return action

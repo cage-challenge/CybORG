@@ -58,3 +58,7 @@ class ChallengeWrapper(Env,BaseWrapper):
 
     def get_rewards(self):
         return self.get_attr('get_rewards')()
+
+    def get_reward_breakdown(self, agent: str):
+        return self.get_attr('get_reward_breakdown')(agent)
+

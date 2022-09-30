@@ -67,7 +67,7 @@ def test_bline_agent_blue_interruptions():
     path = path[:-10] + f'/Shared/Scenarios/Scenario1b.yaml'
     cyborg = CybORG(path, 'sim')
     cyborg.set_seed(12)  # todo; Parametrised with different seeds
-    agent = B_lineAgent()
+    agent = B_lineAgent
 
     results = cyborg.reset(agent='Red')
     observation = results.observation
@@ -135,6 +135,7 @@ def test_blineagent_vs_react_restore_agent_step():
         else:
             assert result.observation['success'] == True, f'Unsuccessful action {result.action} for step {i}'
 
+@pytest.mark.skip()
 def test_bline_resilience():
     path = str(inspect.getfile(CybORG))
     path = path[:-10] + f'/Shared/Scenarios/Scenario1b.yaml'

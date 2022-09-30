@@ -121,133 +121,234 @@ class CybORG (CybORGLogger):
         return self.environment_controller.start(steps, log_file)
 
     def get_true_state(self, info: dict) -> dict:
-        """Get the current state information as required in the info dict
+        """
+        Query the current state.
+
+        Parameters
+        ----------
+        info : dict
+            Dictionary con
 
         Returns
         -------
         Results
-            The information requested by the info dict
+            The information requested.
         """
         return self.environment_controller.get_true_state(info).data
 
     def get_agent_state(self, agent_name) -> dict:
-        """Get the initial observation as observed by agent_name
+        """
+        Get the initial observation of the specified agent.
 
-                Returns
-                -------
-                Results
-                    The initial observation of agent_name
-                """
+        Parameters
+        ----------
+        agent : str
+            The agent to get the initial observation for.
+            Set as 'True' to get the true-state.
+
+        Returns
+        -------
+        dict
+            The initial observation of the specified agent.
+        """
         return self.environment_controller.get_agent_state(agent_name).data
 
     def reset(self, agent: str = None) -> Results:
-        """Reset CybORG and get initial agent observation and actions
+        """
+        Resets CybORG and gets initial observation and action-space for the specified agent.
+
+        Note
+        ----
+        This method is a critical part of the OpenAI Gym API.
 
         Parameters
         ----------
         agent : str, optional
-            the agent to get initial observation for, if None will return
-            initial white state (default=None)
+            The agent to get the initial observation for.
+            If None will return the initial true-state (default=None).
 
         Returns
         -------
         Results
-            The initial observation and actions of a agent or white team
+            The initial observation and actions of an agent.
         """
         return self.environment_controller.reset(agent=agent)
 
     def shutdown(self, **kwargs) -> bool:
-        """Shutdown CybORG
+        """
+        Shuts down the CybORG environment.
 
         Parameters
         ----------
         **kwargs : dict, optional
-            keyword arguments to pass to environment controller shutdown
+            Keyword arguments to pass to the environment controller shutdown
             function. See the shutdown function of the specific environment
             controller used for details.
 
         Returns
         -------
         bool
-            True if cyborg was shutdown without issue
+            True if cyborg was shutdown without any issues.
         """
         self.environment_controller.shutdown(**kwargs)
 
     def pause(self):
-        """Pauses the environment"""
+        """Pauses the environment."""
         self.environment_controller.pause()
 
     def save(self, filepath: str):
-        """Saves the CybORG to file
+        """
+        Saves the CybORG environment to a file.
 
-        Note: Not currently supported for all environments
+        Note
+        ----
+        Not currently supported for all environments.
 
         Parameters
         ----------
         filepath : str
-            path to file to save env to
+            Path to file to save environment to.
         """
         self.environment_controller.save(filepath)
 
     def restore(self, filepath: str):
-        """Restores the CybORG from file
+        """
+        Restores the CybORG environment from a file.
 
-        Note: Not currently supported for all environments
+        Note
+        ----
+        Not currently supported for all environments.
 
         Parameters
         ----------
         filepath : str
-            path to file to restore env from
+            Path to file to restore environment from.
         """
         self.environment_controller.restore(filepath)
 
     def get_observation(self, agent: str) -> dict:
-        """Get the last observation for an agent
+        """
+        Get the last observation for an agent.
 
         Parameters
         ----------
         agent : str
-            name of agent to get observation for
+            Name of the agent to get observation for.
 
         Returns
         -------
         Observation
-            agents last observation
+            The agent's last observation.
         """
         return self.environment_controller.get_last_observation(agent).data
 
     def get_action_space(self, agent: str):
-        # returns the current maximum action space
+        """
+        Returns the most recent action space for the specified agent.
+
+        Action spaces may change dynamically as the scenario progresses.
+
+        Parameters
+        ----------
+        agent : str
+            Name of the agent to get action space for.
+
+        Returns
+        -------
+        dict
+            The action space of the specified agent.
+
+        """
         return self.environment_controller.get_action_space(agent)
 
     def get_observation_space(self, agent: str):
+        """
+        Returns the most recent observation for the specified agent.
+
+        Parameters
+        ----------
+        agent : str
+            Name of the agent to get observation space for.
+
+        Returns
+        -------
+        dict
+            The observation of the specified agent.
+
+        """
         return self.environment_controller.get_observation_space(agent)
 
     def get_last_action(self, agent: str):
+        """
+        Returns the last executed action for the specified agent.
+
+        Parameters
+        ----------
+        agent : str
+            Name of the agent to get last action for.
+
+        Returns
+        -------
+        Action
+            The last action of the specified agent.
+
+        """
         return self.environment_controller.get_last_action(agent)
 
     def set_seed(self, seed: int):
+        """
+        Sets a random seed.
+
+        Parameters
+        ----------
+        seed : int
+        """
         random.seed(seed)
 
     def get_ip_map(self):
+        """
+        Returns a mapping of hostnames to ip addresses for the current scenario.
+
+        Returns
+        -------
+        dict
+            The ip_map indexed by hostname.
+
+        """
         return self.environment_controller.hostname_ip_map
     
     def get_rewards(self):
+        """
+        Returns the rewards for each agent at the last executed step.
+
+        Returns
+        -------
+        dict
+            The rewards indexed by agent name.
+
+        """
         return self.environment_controller.reward
 
+    def get_reward_breakdown(self,agent:str):
+        # TODO: Docstring
+        return self.environment_controller.get_reward_breakdown(agent)
+
     def get_attr(self, attribute: str) -> Any:
-        """gets a specified attribute from this wrapper if present of requests it from the wrapped environment
+        """
+        Returns the specified attribute if present. 
 
-                Parameters
-                ----------
-                attribute : str
-                    name of the requested attribute
+        Intended to give wrappers access to the base CybORG class.
 
-                Returns
-                -------
-                Any
-                    the requested attribute
-                """
+        Parameters
+        ----------
+        attribute : str
+            Name of the requested attribute.
+
+        Returns
+        -------
+        Any
+            The requested attribute.
+        """
         if hasattr(self, attribute):
             return self.__getattribute__(attribute)
         else:

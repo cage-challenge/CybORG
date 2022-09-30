@@ -2,7 +2,8 @@ import random
 from CybORG.Shared.Actions import DiscoverRemoteSystems, DiscoverNetworkServices, ExploitRemoteService, PrivilegeEscalate, Impact
 
 class HeuristicRed():
-    def __init__(self, session=0):
+    def __init__(self, session=0, priority=None):
+        self.priority = priority
         self.parameters = {
                 'session':session,
                 'agent':'Red',
@@ -28,8 +29,9 @@ class HeuristicRed():
         else:
             self._process_last_action_success() if self.last_action else None
             self._process_new_ips(obs)
-
+        
         action = self._advance_killchain()
+
         return action
 
     def _process_last_action_success(self):
@@ -88,8 +90,12 @@ class HeuristicRed():
             subnet = random.choice(list(self.unexplored_subnets))
             action = DiscoverRemoteSystems(subnet=subnet,**self.parameters)
         else:
+
             ip = self._choose_ip()
+            
             action = self._choose_exploit(ip)
+            if ip not in self.ip_status:
+                self.ip_status[ip] = 0
        
         self.last_action = action
         self.history.append(action)
@@ -114,8 +120,10 @@ class HeuristicRed():
     def _choose_exploit(self,ip):
         status = self.ip_status[ip]
         command = self.killchain[status]
-        if status < 2:
+        if status == 0:
             action = command(ip_address=ip,**self.parameters)
+        elif status == 1: 
+            action = command(ip_address=ip, priority=self.priority,**self.parameters)
         else:
             hostname = self.ip_map[ip]
             action = command(hostname=hostname,**self.parameters)

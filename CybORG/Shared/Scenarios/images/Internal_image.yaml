@@ -21,6 +21,7 @@ Test_Host:
     PID: 4400
     PPID: 4
     Process Name: svchost.exe
+    Process Type: rdp
     Username: SYSTEM
   - Connections:
     - local_address: 0.0.0.0

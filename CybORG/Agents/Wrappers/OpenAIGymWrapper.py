@@ -17,7 +17,7 @@ class OpenAIGymWrapper(Env, BaseWrapper):
             assert isinstance(self.get_action_space(self.agent_name), int)
             self.action_space = spaces.Discrete(self.get_action_space(self.agent_name))
         box_len = len(self.observation_change(self.env.reset(self.agent_name).observation))
-        self.observation_space = spaces.Box(-1.0, 3.0, shape=(box_len,), dtype=np.float32)
+        self.observation_space = spaces.Box(-1.0, 1.0, shape=(box_len,), dtype=np.float32)
         self.reward_range = (float('-inf'), float('inf'))
         self.metadata = {}
         self.action = None
@@ -28,13 +28,13 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         result.observation = self.observation_change(result.observation)
         result.action_space = self.action_space_change(result.action_space)
         info = vars(result)
-        return np.array(result.observation, dtype=np.float32), result.reward, result.done, info
+        return np.array(result.observation), result.reward, result.done, info
 
     def reset(self, agent=None):
         result = self.env.reset(self.agent_name)
         result.action_space = self.action_space_change(result.action_space)
         result.observation = self.observation_change(result.observation)
-        return np.array(result.observation, dtype=np.float32)
+        return np.array(result.observation)
 
     def render(self):
         # TODO: If FixedFlatWrapper it will error out!

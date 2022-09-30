@@ -27,6 +27,7 @@ def get_table(rows):
     table.sortby = 'IP Address'
     return table    
 
+@pytest.mark.skip
 def test_RedTableWrapper():
     path = str(inspect.getfile(CybORG))    
     path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'    
@@ -153,6 +154,7 @@ def test_RedTableWrapper():
     # Expected table same as previous
     assert observation.get_string() == expected_table.get_string()
 
+@pytest.mark.skip
 def test_RedTableWrapper_blue_remove_agent():
 
     path = str(inspect.getfile(CybORG))

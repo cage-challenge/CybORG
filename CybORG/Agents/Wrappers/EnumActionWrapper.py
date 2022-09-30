@@ -33,6 +33,8 @@ class EnumActionWrapper(BaseWrapper):
             param_dict = {}
             param_list = [{}]
             for p in self.action_signature[action]:
+                if p == 'priority':
+                    continue
                 temp[p] = []
                 if p not in params:
                     params.append(p)

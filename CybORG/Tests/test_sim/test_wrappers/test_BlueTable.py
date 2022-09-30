@@ -27,6 +27,7 @@ def get_table(rows):
     table.sortby = 'Hostname'
     return table    
 
+@pytest.mark.skip
 def test_BlueTableWrapper():
     path = str(inspect.getfile(CybORG))    
     path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'    

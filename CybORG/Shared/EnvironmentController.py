@@ -123,7 +123,8 @@ class EnvironmentController:
             else:
                 agent_action = action
             if not self.test_valid_action(agent_action, agent_object) and not skip_valid_action_check:
-                agent_action = InvalidAction()
+
+                agent_action = InvalidAction(agent_action)
             self.action[agent_name] = agent_action
 
             # perform action on state
@@ -401,6 +402,12 @@ class EnvironmentController:
             if parameter_value not in action_space[parameter_name] or not action_space[parameter_name][parameter_value]:
                 return False
         return True
+
+    def get_reward_breakdown(self, agent:str):
+        return self.agent_interfaces[agent].reward_calculator.host_scores
+
+        
+
 
 
 

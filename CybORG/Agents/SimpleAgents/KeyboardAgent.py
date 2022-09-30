@@ -54,6 +54,8 @@ class KeyboardAgent(BaseAgent):
             for parameter in parameter_list:
                 if parameter == 'self':
                     continue
+                if parameter == 'priority':
+                    continue
 
                 option_dict = action_space[parameter]
                 filter_f = lambda key : option_dict[key]

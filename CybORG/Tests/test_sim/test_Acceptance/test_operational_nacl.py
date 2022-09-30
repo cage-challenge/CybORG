@@ -38,12 +38,9 @@ def test_operational_nacl(cyborg):
     # Restore Enterprise subnet and test if red can exploit Op Server
     for hostname in ['Enterprise0','Enterprise1','Enterprise2']:
         action = Restore(session=0,agent='Blue',hostname=hostname)
-        try:
-            results = cyborg.step(agent='Blue',action=action)
-            action = cyborg.get_last_action('Red')
-            history.append((action,hostname))
-        except:
-            breakpoint()
+        results = cyborg.step(agent='Blue',action=action)
+        action = cyborg.get_last_action('Red')
+        history.append((action,hostname))
 
     ip = ip_map['Op_Server0']
     action = ExploitRemoteService(agent='Red',session=0,ip_address=ip)

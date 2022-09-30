@@ -146,7 +146,7 @@ class Misinform(Action):
         self.agent = agent
         self.session = session
         self.hostname = hostname
-        self.decoy_type = DecoyType.SANDBOXING_EXPLOIT
+        self.decoy_type = DecoyType.EXPLOIT
         self.candidate_decoys = (
                 sshd_decoy_factory,
                 apache_decoy_factory,

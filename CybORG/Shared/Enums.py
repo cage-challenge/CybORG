@@ -37,6 +37,12 @@ class OperatingSystemPatch(enum.Enum):
     Q147222 = enum.auto()
     KB911164 = enum.auto()
     MS17_010 = enum.auto()
+    KB4500331 = enum.auto()
+    KB4499149 = enum.auto()
+    KB4499180 = enum.auto()
+    KB4499164 = enum.auto()
+    KB4499175 = enum.auto()
+
 
     @classmethod
     def parse_string(cls, patch_string):
@@ -48,7 +54,21 @@ class OperatingSystemPatch(enum.Enum):
             return cls.KB911164
         elif patch_string.lower() == "ms17-010":
             return cls.MS17_010
+        elif patch_string.lower() == "kb4500331":
+            return cls.KB4500331
+        elif patch_string.lower() == "kb4499149":
+            return cls.KB4499149
+        elif patch_string.lower() == "kb4499180":
+            return cls.KB4499180
+        elif patch_string.lower() == "kb4499164":
+            return cls.KB4499164
+        elif patch_string.lower() == "kb4499175":
+            return cls.KB4499175
+
         return cls.UNKNOWN
+
+    def __str__(self):
+        return str(self.value)
 
 
 class Architecture(enum.Enum):
@@ -96,6 +116,11 @@ class OperatingSystemDistribution(enum.Enum):
     WINDOWS_10 = enum.auto()
     UBUNTU = enum.auto()
     KALI = enum.auto()
+    WINDOWS_SVR_2003SP2 = enum.auto()
+    WINDOWS_VISTA = enum.auto()
+    WINDOWS_SVR_2008SP1 = enum.auto()
+    WINDOWS_SVR_2008R2 = enum.auto()
+    WINDOWS_7SP1 = enum.auto()
 
     @classmethod
     def parse_string(cls, os_string):
@@ -116,6 +141,16 @@ class OperatingSystemDistribution(enum.Enum):
             return cls.UBUNTU
         elif "kali" in os_string:
             return cls.KALI
+        elif "2003sp2" in os_string and "window" in os_string:
+            return cls.WINDOWS_SVR_2003SP2
+        elif "vista" in os_string and "window" in os_string:
+            return cls.WINDOWS_VISTA
+        elif "svr 2008sp1" in os_string and "window" in os_string:
+            return cls.WINDOWS_SVR_2008SP1
+        elif "svr 2008r2" in os_string and "window" in os_string:
+            return cls.WINDOWS_SVR_2008R2
+        elif "7sp1" in os_string and "window" in os_string:
+            return cls.WINDOWS_7SP1
         else:
             return cls.UNKNOWN
 
@@ -213,6 +248,8 @@ class ProcessName(enum.Enum):
     MYSQLD_SAFE = enum.auto()
     MYSQLD = enum.auto()
     SMBD = enum.auto()
+    SMTP = enum.auto()
+    FEMITTER = enum.auto()
     APACHE2 = enum.auto()
     EXPLORER = enum.auto()
     LSASS = enum.auto()
@@ -251,6 +288,10 @@ class ProcessName(enum.Enum):
             return cls.MYSQLD
         elif name == "smbd":
             return cls.SMBD
+        elif name == "smtp":
+            return cls.SMTP
+        elif name == "femitter.exe":
+            return cls.FEMITTER
         elif name == "apache2":
             return cls.APACHE2
         elif name == "explorer" or name == "explorer.exe":
@@ -293,11 +334,14 @@ class ProcessType(enum.Enum):
     SSH = enum.auto()
     SVCHOST = enum.auto()
     SMB = enum.auto()
+    SMTP = enum.auto()
+    FEMITTER = enum.auto()
     WEBSERVER = enum.auto()
     NETCAT = enum.auto()
     RDP = enum.auto()
     REVERSE_SESSION_HANDLER = enum.auto()
     REVERSE_SESSION = enum.auto()
+    MYSQL = enum.auto()
 
     @classmethod
     def parse_string(cls, service_string):
@@ -306,6 +350,12 @@ class ProcessType(enum.Enum):
             return cls.SSH
         elif service_string == "svchost":
             return cls.SVCHOST
+        elif service_string == "smtp":
+            return cls.SMTP
+        elif service_string == "femitter":
+            return cls.FEMITTER
+        elif service_string == "mysql":
+            return cls.MYSQL
         elif service_string == "smb":
             return cls.SMB
         elif service_string.replace(" ", "") == "webserver":
@@ -337,11 +387,15 @@ class ProcessVersion(enum.Enum):
     SMBv1 = enum.auto()
     APACHE_TOMCAT = enum.auto()
     PYTHON_SERVER = enum.auto()
+    HARAKA_2_7_0 = enum.auto()
+    HARAKA_2_8_9 = enum.auto()
     UNKNOWN = enum.auto()
 
     @classmethod
     def parse_string(cls, version_string):
-        version_string = version_string.lower()
+        if version_string is not None and isinstance(version_string, str):
+            version_string = version_string.lower()
+
         if version_string == "openssh 1.3":
             return cls.OPENSSH_1_3
         elif version_string == "10.0.17763.1":
@@ -354,6 +408,10 @@ class ProcessVersion(enum.Enum):
             return cls.PYTHON_SERVER
         elif version_string == "smbv1":
             return cls.SMBv1
+        elif version_string == "haraka 2.7.0":
+            return cls.HARAKA_2_7_0
+        elif version_string is not None:
+            return version_string
         else:
             return cls.UNKNOWN
 

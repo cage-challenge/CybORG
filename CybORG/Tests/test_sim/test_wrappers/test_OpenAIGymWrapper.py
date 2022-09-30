@@ -1,9 +1,6 @@
-import inspect
-
 import pytest
-import numpy as np
+import inspect
 from gym import spaces
-
 from CybORG import CybORG
 from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
 from CybORG.Agents.Wrappers.FixedFlatWrapper import FixedFlatWrapper
@@ -129,11 +126,11 @@ def test_get_attr(cyborg):
 def test_get_observation(cyborg):
     step_obs = cyborg.reset()
     method_obs = cyborg.get_observation(cyborg.agent_name)
-    assert all(step_obs == np.array(method_obs, dtype=np.float32))
+    assert all(step_obs == method_obs)
 
     step_obs, reward, done, info = cyborg.step()
     method_obs = cyborg.get_observation(cyborg.agent_name)
-    assert all(step_obs == np.array(method_obs, dtype=np.float32))
+    assert all(step_obs == method_obs)
 
 def test_get_agent_state(cyborg):
     cyborg.reset()

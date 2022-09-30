@@ -6,7 +6,6 @@ from CybORG.Agents import DebuggingAgent
 
 killchain = ['DiscoverRemoteSystems','DiscoverNetworkServices', 'ExploitRemoteService','PrivilegeEscalate']
 
-@pytest.mark.skip()
 def check_results(results,step,cyborg,agent,duration,target):
     name = results.action.__class__.__name__
     assert results.observation['success']  != False  if target != 'Defender' else True # Double negative needed 
@@ -17,7 +16,6 @@ def check_results(results,step,cyborg,agent,duration,target):
     elif step > duration-3:
         assert name == 'Impact'
 
-@pytest.mark.skip()
 def run_agent(cyborg,hostnames,duration):
     results = cyborg.reset(agent='Red')
     obs = results.observation
@@ -39,7 +37,6 @@ def run_agent(cyborg,hostnames,duration):
 
         check_results(results,step,cyborg,agent,duration,target)
 
-@pytest.mark.skip()
 def test_short_killchain(cyborg):
     hostnames = ['User2', 'Enterprise1','Enterprise2','Op_Server0']
     run_agent(cyborg,hostnames,24)
@@ -90,8 +87,5 @@ def test_repeat_action(cyborg):
         target = hostnames[agent.position]
 
         name = results.action.__class__.__name__
-        try:
-            assert name == ('ExploitRemoteService' if step % 2 == 0 \
-                else 'PrivilegeEscalate')
-        except:
-            breakpoint()
+        assert name == ('ExploitRemoteService' if step % 2 == 0 \
+            else 'PrivilegeEscalate')

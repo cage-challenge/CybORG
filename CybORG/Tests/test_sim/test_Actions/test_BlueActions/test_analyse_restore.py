@@ -26,7 +26,7 @@ hosts = [
 @pytest.fixture
 def cyborg():
     path = str(inspect.getfile(CybORG))
-    path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'
+    path = path[:-10] + '/Shared/Scenarios/Scenario2.yaml'
     return CybORG(path, 'sim', agents={'Red':RedMeanderAgent})
 
 def test_restore_removes_malware(cyborg):

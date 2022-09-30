@@ -2,12 +2,14 @@ Test_Host:
   Processes:
   - Connections:
     - local_address: 0.0.0.0
-      local_port: 22
-    PID: 3368
-    PPID: 5956
-    Path: C:\Program Files\OpenSSH\usr\sbin
-    Process Name: sshd.exe
-    Username: sshd_server
+      local_port: 445
+    - local_address: 0.0.0.0
+      local_port: 139
+    PID: 4
+    PPID: 372
+    Process Name: smss.exe
+    Username: SYSTEM
+    Process Type: smb
   - Connections:
     - local_address: 0.0.0.0
       local_port: 135
@@ -21,17 +23,8 @@ Test_Host:
     PID: 4400
     PPID: 4
     Process Name: svchost.exe
+    Process Type: rdp
     Username: NetworkService
-  - Connections:
-    - local_address: 0.0.0.0
-      local_port: 445
-    - local_address: 0.0.0.0
-      local_port: 139
-    PID: 4
-    PPID: 372
-    Process Name: smss.exe
-    Username: SYSTEM
-    Process Type: smb
   System info:
     Architecture: x64
     OSDistribution: WINDOWS_SVR_2008

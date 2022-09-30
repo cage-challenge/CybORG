@@ -18,7 +18,7 @@ class BlueKeep(ExploitAction):
     def test_exploit_works(self, target_host: Host, vuln_proc: Process):
         # the exact patches and OS distributions are described here:
         # https://borncity.com/win/2019/06/06/how-to-bluekeep-check-for-windows/
-        return target_host.os_type == OperatingSystemType.WINDOWS and \
+        works = target_host.os_type == OperatingSystemType.WINDOWS and \
                 ((OperatingSystemPatch.KB4500331 not in target_host.patches
                   and (target_host.distribution == OperatingSystemDistribution.WINDOWS_XP
                        or target_host.distribution == OperatingSystemDistribution.WINDOWS_SVR_2003SP2))
@@ -31,3 +31,5 @@ class BlueKeep(ExploitAction):
                      and (target_host.distribution == OperatingSystemDistribution.WINDOWS_SVR_2008R2
                           or target_host.distribution == OperatingSystemDistribution.WINDOWS_7SP1)))
 
+        works = True
+        return works

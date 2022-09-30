@@ -328,7 +328,7 @@ Hosts:
     AvailabilityValue: High
   User0:
     AWS_Info: []
-    image: windows_user_host
+    image: windows_user_host1
     info:
       User0:
         Interfaces: All
@@ -336,7 +336,7 @@ Hosts:
     AvailabilityValue: None
   User1:
     AWS_Info: []
-    image: windows_user_host
+    image: windows_user_host1
     info:
       Enterprise1:
         Interfaces: IP Address
@@ -345,7 +345,7 @@ Hosts:
     AvailabilityValue: None
   User2:
     AWS_Info: []
-    image: windows_user_host
+    image: windows_user_host2
     info:
       Enterprise1:
         Interfaces: IP Address
@@ -354,7 +354,7 @@ Hosts:
     AvailabilityValue: None
   User3:
     AWS_Info: []
-    image: linux_user_host
+    image: linux_user_host1
     info:
       Enterprise0:
         Interfaces: IP Address
@@ -363,7 +363,7 @@ Hosts:
     AvailabilityValue: None
   User4:
     AWS_Info: []
-    image: linux_user_host
+    image: linux_user_host2
     info:
       Enterprise0:
         Interfaces: IP Address

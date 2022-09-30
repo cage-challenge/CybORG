@@ -82,3 +82,14 @@ def test_get_attr(cyborg):
         class_output = cyborg.__getattribute__(attribute)
         assert method_output == class_output
 
+@pytest.mark.skip
+def test_get_reward_breakdown(cyborg):
+    for i in range(30):
+        cyborg.step()
+
+    red_rewards = cyborg.get_reward_breakdown('Red')
+    assert False
+
+    blue_rewards = cyborg.get_reward_breakdown('Blue')
+    assert False
+

@@ -32,6 +32,9 @@ class Sleep(Action):
 
 
 class InvalidAction(Action):
+    def __init__(self, action: Action):
+        self.action = action
+
     def sim_execute(self, state):
         return Observation(success=False)
 

@@ -51,6 +51,6 @@ def test_GreenPortScan():
                                                                          
     local_address = cyborg.environment_controller.hostname_ip_map['User2']
     remote_address = cyborg.environment_controller.hostname_ip_map['User0']
-    ports = set([22,135,3389,445,139])
+    ports = set([135,3389,445,139])
 
     process_connections(obs,local_address,remote_address,ports)

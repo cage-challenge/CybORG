@@ -1,3 +1,5 @@
+import random
+
 from CybORG.Agents import BaseAgent
 from CybORG.Shared import Results
 from CybORG.Shared.Actions import PrivilegeEscalate, ExploitRemoteService, DiscoverRemoteSystems, Impact, \
@@ -33,40 +35,45 @@ class B_lineAgent(BaseAgent):
 
             # Discover Remote Systems
             elif self.action == 0:
+                self.initial_ip = observation['User0']['Interface'][0]['IP Address']
                 self.last_subnet = observation['User0']['Interface'][0]['Subnet']
                 action = DiscoverRemoteSystems(session=session, agent='Red', subnet=self.last_subnet)
             # Discover Network Services- new IP address found
             elif self.action == 1:
-                self.last_ip_address = [value for key, value in observation.items() if key != 'success'][1]['Interface'][0]['IP Address']
+                hosts = [value for key, value in observation.items() if key != 'success']
+                get_ip = lambda x : x['Interface'][0]['IP Address']
+                interfaces = [get_ip(x) for x in hosts if get_ip(x)!= self.initial_ip]
+                self.last_ip_address = random.choice(interfaces)
                 action =DiscoverNetworkServices(session=session, agent='Red', ip_address=self.last_ip_address)
 
             # Exploit User1
             elif self.action == 2:
                  action = ExploitRemoteService(session=session, agent='Red', ip_address=self.last_ip_address)
 
-            # Privilege escalation on User1
+            # Privilege escalation on User Host
             elif self.action == 3:
                 hostname = [value for key, value in observation.items() if key != 'success' and 'System info' in value][0]['System info']['Hostname']
                 action = PrivilegeEscalate(agent='Red', hostname=hostname, session=session)
 
             # Discover Network Services- new IP address found
             elif self.action == 4:
-                self.last_ip_address = observation['Enterprise1']['Interface'][0]['IP Address']
+                self.enterprise_host = [x for x in observation if 'Enterprise' in x][0]
+                self.last_ip_address = observation[self.enterprise_host]['Interface'][0]['IP Address']
                 action = DiscoverNetworkServices(session=session, agent='Red', ip_address=self.last_ip_address)
 
-            # Exploit- Enterprise1
+            # Exploit- Enterprise Host
             elif self.action == 5:
                 self.target_ip_address = [value for key, value in observation.items() if key != 'success'][0]['Interface'][0]['IP Address']
                 action = ExploitRemoteService(session=session, agent='Red', ip_address=self.target_ip_address)
 
-            # Privilege escalation on Enterprise1
+            # Privilege escalation on Enterprise Host
             elif self.action == 6:
                 hostname = [value for key, value in observation.items() if key != 'success' and 'System info' in value][0]['System info']['Hostname']
                 action = PrivilegeEscalate(agent='Red', hostname=hostname, session=session)
 
             # Scanning the new subnet found.
             elif self.action == 7:
-                self.last_subnet = observation['Enterprise1']['Interface'][0]['Subnet']
+                self.last_subnet = observation[self.enterprise_host]['Interface'][0]['Subnet']
                 action = DiscoverRemoteSystems(subnet=self.last_subnet, agent='Red', session=session)
 
             # Discover Network Services- Enterprise2

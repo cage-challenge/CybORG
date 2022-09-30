@@ -79,6 +79,7 @@ class Host(Entity):
                     Process(pid=process.get('PID'), parent_pid=process.get('PPID'), username=process.get("Username"),
                             process_name=process.get('Process Name'), path=process.get('Path'),
                             open_ports=process.get('Connections'), properties=process.get('Properties'),
+                            process_version=process.get('Process Version'), # adding process version.
                             process_type=process.get('Process Type')))
         self.original_processes = deepcopy(self.processes)
 

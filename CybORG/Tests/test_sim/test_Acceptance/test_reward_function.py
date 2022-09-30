@@ -7,7 +7,6 @@ from CybORG import CybORG
 from CybORG.Agents import DebuggingAgent, BlueMonitorAgent
 from CybORG.Shared.Actions import Restore
 
-@pytest.mark.skip()
 @pytest.fixture
 def security_values():
     security_values = {
@@ -27,7 +26,6 @@ def security_values():
             }
     return security_values
 
-@pytest.mark.skip()
 @pytest.fixture
 def availability_values():
     availability_values = {

@@ -53,6 +53,9 @@ class RedAbstractSession(Session):
         else:
             self.ports[ip_address] = [port]
 
+    def clearports(self, ip_address: IPv4Address):
+            self.ports[ip_address] = []
+
     def addos(self, hostname: str, os: OperatingSystemType):
         self.operating_system[hostname] = os
 

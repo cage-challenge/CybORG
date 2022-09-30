@@ -9,7 +9,7 @@ A cyber security research environment for training and development of security h
 Install CybORG locally using pip
 
 ```
-# from the cage-challenge-1/CybORG directory
+# from the cage-challenge-2/CybORG directory
 pip install -e .
 ```
 
@@ -19,7 +19,7 @@ Create a CybORG environment with:
 ```
 from CybORG import CybORG
 path = str(inspect.getfile(CybORG))
-path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'
+path = path[:-10] + '/Shared/Scenarios/Scenario2.yaml'
 cyborg = CybORG(path, 'sim')
 ```
 
@@ -31,7 +31,7 @@ To create an environment where the red agent has preexisting knowledge of the ne
  
 
 ```
-agent = B_lineAgent
+red_agent = B_lineAgent
 cyborg = CybORG(path, 'sim', agents={'Red': red_agent})
 ```
 To create an environment where the red agent meanders through the network and attempts to take control of all hosts in the network use:
@@ -39,12 +39,12 @@ To create an environment where the red agent meanders through the network and at
  
 
 ```
-agent = RedMeanderAgent
+red_agent = RedMeanderAgent
 cyborg = CybORG(path, 'sim', agents={'Red': red_agent})
 ```
 To create an environment where the red agent always takes the sleep action use:
 ```
-agent = SleepAgent
+red_agent = SleepAgent
 cyborg = CybORG(path, 'sim', agents={'Red': red_agent})
 ```
 
@@ -77,12 +77,12 @@ To evaluate an agent's performance please use the [evaluation script](CybORG/Eva
  
 
 
-The wrap function on line 19 defines what wrappers will be used during evaluation
+The [wrap function](CybORG/Evaluation/evaluation.py#L22-L23) defines what wrappers will be used during evaluation.
 ```
 def wrap(env):
-    return OpenAIGymWrapper(agent_name, EnumActionWrapper(FixedFlatWrapper(ReduceActionSpaceWrapper(env))))
+    return ChallengeWrapper(env=env, agent_name='Blue')
 ```
-The agent under evaluation is defined on line 35. 
+The agent under evaluation is defined [here](CybORG/Evaluation/evaluation.py#L42-L43). 
 To evaluate an agent, extend the [BaseAgent](CybORG/Agents/SimpleAgents/BaseAgent.py). 
 We have included the [BlueLoadAgent](CybORG/Agents/SimpleAgents/BlueLoadAgent.py) as an example of an agent that uses the stable_baselines3 library.
 ```
@@ -95,12 +95,12 @@ For further guidance on the CybORG environment please refer to the [tutorial not
 
 ## Citing this project
 ```
-@misc{cage_challenge_1,
-  Title = {Cyber Autonomy Gym for Experimentation Challenge 1},
-  Note = {Created by Maxwell Standen, David Bowman, Son Hoang, Toby Richer, Martin Lucas, Richard Van Tassel},
+@misc{cage_challenge_2,
+  Title = {Cyber Autonomy Gym for Experimentation Challenge 2},
+  Note = {Created by Maxwell Standen, David Bowman, Son Hoang, Toby Richer, Martin Lucas, Richard Van Tassel, Phillip Vu, Mitchell Kiely},
   Publisher = {GitHub},
-  Howpublished = {\url{https://github.com/cage-challenge/cage-challenge-1}},
-  Year = {2021},
+  Howpublished = {\url{https://github.com/cage-challenge/cage-challenge-2}},
+  Year = {2022}
 }
 ```
 

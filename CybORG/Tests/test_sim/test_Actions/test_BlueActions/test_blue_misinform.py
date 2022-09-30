@@ -146,7 +146,6 @@ def _attempt_escalate(cyborg: CybORG, red_session: int, hostname: str) -> dict:
     return result.observation
 
 # Run blue remove with no red activity.
-@pytest.mark.skip()
 def _blue_misinform(cyborg: CybORG, blue_session: int,
         hostname: str, expected_success: bool, is_dummy: bool,*,
         allows_escalate: bool=False, allows_exploit: bool=False,
@@ -192,7 +191,6 @@ def _blue_misinform(cyborg: CybORG, blue_session: int,
     else:
         assert results.observation['success'] is TrinaryEnum.FALSE
 
-@pytest.mark.skip()
 def _test_exploit(*, cyborg: CybORG, addresses, red_session, permissive=False):
     # What exploit fails without misinform, due to lack of network access, incompatibility
     exploit_cant_connect = ["Defender", "Enterprise0", "Enterprise1", "Enterprise2",
@@ -233,7 +231,6 @@ def _test_exploit(*, cyborg: CybORG, addresses, red_session, permissive=False):
             assert now_success
 
 
-@pytest.mark.skip()
 def _misinform_with_tomcat(cyborg: CybORG, blue_session, *, allows_exploit=False,
         allows_escalate=False):
     # Allow red to successfully exploit these ones
@@ -251,7 +248,6 @@ def _misinform_with_tomcat(cyborg: CybORG, blue_session, *, allows_exploit=False
         _blue_misinform(cyborg, blue_session, hostname, will_succeed, False,
                 allows_exploit=allows_exploit, allows_escalate=allows_escalate)
 
-@pytest.mark.skip()
 def _prep_test_env(seed):
     path = str(inspect.getfile(CybORG))
     path = path[:-10] + '/Shared/Scenarios/Scenario1c.yaml'
@@ -268,8 +264,7 @@ def _prep_test_env(seed):
 
     return (cyborg, blue_session, red_session, addresses)
 
-
-@pytest.mark.skip()
+@pytest.mark.skip
 @pytest.mark.parametrize("seed", [1, 22447, 3242, 4])
 def test_blue_misinform_vs_exploit(seed):
     """Tests misinform for interfering with exploit"""
@@ -284,7 +279,6 @@ def test_blue_misinform_vs_exploit(seed):
 
     _test_exploit(cyborg=cyborg, addresses=addresses, red_session=red_session)
 
-@pytest.mark.skip()
 def _misinform_with_dummy(cyborg, blue_session, allows_exploit = False,
         allows_escalate = False, sandboxing=False):
     # dont interfere with user3
@@ -302,7 +296,6 @@ def _misinform_with_dummy(cyborg, blue_session, allows_exploit = False,
                 allows_exploit=allows_exploit, allows_escalate=allows_escalate,
                 sandboxing=sandboxing)
 
-@pytest.mark.skip()
 def _test_escalate(*, cyborg: CybORG, addresses, red_session, permissive=False):
     # What escalate succeeds without misinform
     # User0 is already owned, User5 is skipped, User1-4 are exploited successfully
@@ -349,7 +342,7 @@ def _test_escalate(*, cyborg: CybORG, addresses, red_session, permissive=False):
         else:
             assert now_success
 
-@pytest.mark.skip()
+@pytest.mark.skip
 @pytest.mark.parametrize("seed", [1,2,3,4])
 def test_blue_misinform_vs_escalate(seed):
     """
@@ -373,7 +366,7 @@ def test_blue_misinform_vs_escalate(seed):
 
     _test_escalate(cyborg=cyborg, addresses=addresses, red_session=red_session)
 
-@pytest.mark.skip()
+@pytest.mark.skip
 @pytest.mark.parametrize("seed", [1,2,3,4])
 def test_blue_misinform_permit_exploit(seed):
     """
@@ -391,7 +384,7 @@ def test_blue_misinform_permit_exploit(seed):
     _test_exploit(cyborg=cyborg, addresses=addresses, red_session=red_session,
             permissive=True)
 
-@pytest.mark.skip()
+@pytest.mark.skip
 @pytest.mark.parametrize("seed", [1,2,3,4])
 def test_blue_misinform_permit_escalate(seed):
     """
@@ -416,7 +409,7 @@ def test_blue_misinform_permit_escalate(seed):
     _test_escalate(cyborg=cyborg, addresses=addresses, red_session=red_session,
             permissive=True)
 
-@pytest.mark.skip()
+@pytest.mark.skip
 def test_blue_misinform_sandboxing_exploit():
     """
     Tests that decoys can allow escalation
@@ -439,7 +432,7 @@ def test_blue_misinform_sandboxing_exploit():
         should_be_failure = isinstance(action, PrivilegeEscalate)
         assert success is not should_be_failure
 
-@pytest.mark.skip()
+@pytest.mark.skip
 def test_stopping_process_on_priv_esc_on_decoy():
     path = str(inspect.getfile(CybORG))
     path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'

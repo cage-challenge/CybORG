@@ -21,6 +21,39 @@ Test_Host:
     Process Type: webserver
     Properties:
       'rfi'
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 3390
+      Transport Protocol: TCP
+    PID: 1101
+    PPID: 1
+    Path: /etc/init.d
+    Process Name: mysql
+    Username: root
+    Properties:
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 443
+      Transport Protocol: TCP
+    PID: 1100
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: apache2
+    Username: www-data
+    Process Type: webserver
+    Properties:
+      'rfi'
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 25
+      Transport Protocol: TCP
+    PID: 1102
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: smtp
+    Username: root
+    Process Type: smtp
+    Process Version: haraka 2.7.0
   System info:
     Architecture: x64
     OSDistribution: UBUNTU

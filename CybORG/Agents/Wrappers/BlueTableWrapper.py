@@ -71,8 +71,7 @@ class BlueTableWrapper(BaseWrapper):
             raise NotImplementedError('Invalid output_mode for BlueTableWrapper')
 
     def _process_initial_obs(self, obs):
-        # TODO remove deepcopy replace with dict comprehension
-        obs = deepcopy(obs)
+        obs = obs.copy()
         self.baseline = obs
         del self.baseline['success']
         for hostid in obs:
@@ -157,12 +156,15 @@ class BlueTableWrapper(BaseWrapper):
 
     def _interpret_connections(self,activity:list):                
         num_connections = len(activity)
+
         ports = set([item['Connections'][0]['local_port'] \
             for item in activity if 'Connections' in item])
         port_focus = len(ports)
 
-        remote_ports = set([item['Connections'][0]['remote_port'] \
+        remote_ports = set([item['Connections'][0].get('remote_port') \
             for item in activity if 'Connections' in item])
+        if None in remote_ports:
+            remote_ports.remove(None)
 
         if num_connections >= 3 and port_focus >=3:
             anomaly = 'Scan'
@@ -170,6 +172,8 @@ class BlueTableWrapper(BaseWrapper):
             anomaly = 'Exploit'
         elif num_connections >= 3 and port_focus == 1:
             anomaly = 'Exploit'
+        elif 'Service Name' in activity[0]:
+            anomaly = 'None'
         else:
             anomaly = 'Scan'
 

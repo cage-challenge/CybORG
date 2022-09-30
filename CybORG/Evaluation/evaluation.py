@@ -1,8 +1,9 @@
+import subprocess
 import inspect
 import time
 from statistics import mean, stdev
 
-from CybORG import CybORG
+from CybORG import CybORG, CYBORG_VERSION
 from CybORG.Agents import B_lineAgent, SleepAgent
 from CybORG.Agents.SimpleAgents.BaseAgent import BaseAgent
 from CybORG.Agents.SimpleAgents.BlueLoadAgent import BlueLoadAgent
@@ -14,16 +15,20 @@ from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
 from CybORG.Agents.Wrappers.ReduceActionSpaceWrapper import ReduceActionSpaceWrapper
 from CybORG.Agents.Wrappers import ChallengeWrapper
 
-MAX_EPS = 10
+MAX_EPS = 100
 agent_name = 'Blue'
 
-def wrap(env):
-    return OpenAIGymWrapper(agent_name, EnumActionWrapper(FixedFlatWrapper(ReduceActionSpaceWrapper(env))))
 
+def wrap(env):
+    return ChallengeWrapper(env=env, agent_name='Blue')
+
+def get_git_revision_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
 if __name__ == "__main__":
-    cyborg_version = '1.2'
-    scenario = 'Scenario1b'
+    cyborg_version = CYBORG_VERSION
+    scenario = 'Scenario2'
+    commit_hash = get_git_revision_hash()
     # ask for a name
     name = input('Name: ')
     # ask for a team
@@ -42,12 +47,12 @@ if __name__ == "__main__":
     file_name = str(inspect.getfile(CybORG))[:-10] + '/Evaluation/' + time.strftime("%Y%m%d_%H%M%S") + f'_{agent.__class__.__name__}.txt'
     print(f'Saving evaluation results to {file_name}')
     with open(file_name, 'a+') as data:
-        data.write(f'CybORG v{1.0}, {scenario}\n')
+        data.write(f'CybORG v{cyborg_version}, {scenario}, Commit Hash: {commit_hash}\n')
         data.write(f'author: {name}, team: {team}, technique: {name_of_agent}\n')
         data.write(f"wrappers: {wrap_line}\n")
 
     path = str(inspect.getfile(CybORG))
-    path = path[:-10] + '/Shared/Scenarios/Scenario1b.yaml'
+    path = path[:-10] + f'/Shared/Scenarios/{scenario}.yaml'
 
     print(f'using CybORG v{cyborg_version}, {scenario}\n')
     for num_steps in [30, 50, 100]:
@@ -74,6 +79,7 @@ if __name__ == "__main__":
                     r.append(rew)
                     # r.append(result.reward)
                     a.append((str(cyborg.get_last_action('Blue')), str(cyborg.get_last_action('Red'))))
+                agent.end_episode()
                 total_reward.append(sum(r))
                 actions.append(a)
                 # observation = cyborg.reset().observation

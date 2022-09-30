@@ -23,3 +23,4 @@ from .LocalShellActions import \
 from .AgentActions import AgentSleep
 from .AbstractActions import Monitor, DiscoverNetworkServices, DiscoverRemoteSystems, ExploitRemoteService, Analyse, Remove, Restore, Misinform, PrivilegeEscalate, Impact
 from .GreenActions import GreenPingSweep, GreenPortScan, GreenConnection
+from .ConcreteActions import EscalateAction, HTTPRFI, HTTPSRFI, SSHBruteForce, FTPDirectoryTraversal, HarakaRCE, SQLInjection, EternalBlue, BlueKeep, DecoyApache, DecoyFemitter, DecoyHarakaSMPT, DecoySmss, DecoySSHD, DecoySvchost, DecoyTomcat, DecoyVsftpd
