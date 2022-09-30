@@ -1,0 +1,48 @@
+Test_Host:
+  Processes:
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 445
+    - local_address: 0.0.0.0
+      local_port: 139
+    PID: 4
+    PPID: 372
+    Process Name: smss.exe
+    Username: SYSTEM
+    Process Type: smb
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 135
+    PID: 832
+    PPID: 4
+    Process Name: svchost.exe
+    Username: SYSTEM
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 3389
+    PID: 4400
+    PPID: 4
+    Process Name: svchost.exe
+    Process Type: rdp
+    Username: NetworkService
+  System info:
+    Architecture: x64
+    OSDistribution: WINDOWS_SVR_2008
+    OSType: WINDOWS
+    OSVersion: W6_1_7601
+  User Info:
+  - Groups:
+    - GID: 0
+      Group Name: ADMINISTRATORS
+    UID: S-1-5-21-1983491181-1743339912-3520046837-500
+    Username: Administrator
+  - UID: S-1-5-21-1983491181-1743339912-3520046837-1019
+    Username: GreenAgent
+  - Groups:
+    - GID: 0
+      Group Name: ADMINISTRATORS
+    UID: S-1-5-21-1983491181-1743339912-3520046837-1000
+    Username: vagrant
+    Password: vagrant
+    Bruteforceable: True
+  - Username: SYSTEM

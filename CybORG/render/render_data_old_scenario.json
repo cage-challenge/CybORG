@@ -1,0 +1,164 @@
+{
+	"drones": {
+		"User0": {
+			"x": 28,
+			"y": 30,
+			"agent": "agent_0"
+		},
+		"User1": {
+			"x": 31,
+			"y": 20,
+			"agent": "agent_1"
+		},
+		"User2": {
+			"x": 45,
+			"y": 15,
+			"agent": "agent_2"
+		},
+		"User3": {
+			"x": 60,
+			"y": 20,
+			"agent": "agent_3"
+		},
+		"User4": {
+			"x": 63,
+			"y": 30,
+			"agent": "agent_4"
+		},
+		"User_router": {
+			"x": 45,
+			"y": 30,
+			"agent": "agent_5"
+		}
+		,
+		"Enterprise0": {
+			"x": 30,
+			"y": 55,
+			"agent": "agent_6"
+		},
+		"Enterprise1": {
+			"x": 30,
+			"y": 45,
+			"agent": "agent_7"
+		},
+		"Enterprise_router": {
+			"x": 45,
+			"y": 48,
+			"agent": "agent_8"
+		},
+		"Defender": {
+			"x": 63,
+			"y": 45,
+			"agent": "agent_9"
+		},
+		"Enterprise2": {
+			"x": 63,
+			"y": 55,
+			"agent": "agent_10"
+		},
+		"Operational_router": {
+			"x": 45,
+			"y": 68,
+			"agent": "agent_11"
+		},
+		"Op_Host0": {
+			"x": 31,
+			"y": 72,
+			"agent": "agent_12"
+		},
+		"Op_Host1": {
+			"x": 42,
+			"y": 80,
+			"agent": "agent_13"
+		},
+		"Op_Host2": {
+			"x": 53,
+			"y": 80,
+			"agent": "agent_14"
+		},
+		"Op_Server0": {
+			"x": 63,
+			"y": 75,
+			"agent": "agent_15"
+		}
+	},
+	"network": {
+		"User0": [
+			"User_router"
+		],
+		"User1": [
+			"User_router"
+		],
+		"User2": [
+			"User_router"
+		],
+		"User3": [
+			"User_router"
+		],
+		"User4": [
+			"User_router"
+		],
+		"User_router": [
+			"User0",
+			"User1",
+			"User2",
+			"User3",
+			"User4"
+		],
+		"Enterprise0": [
+			"Enterprise_router"
+		],
+		"Enterprise1": [
+			"Enterprise_router"
+		],
+		"Enterprise_router": [
+			"User_router",
+			"Operational_router",
+			"Enterprise0",
+			"Enterprise1",
+			"Enterprise2",
+			"Defender"
+		],
+		"Enterprise2": [
+			"Enterprise_router"
+		],
+		"Defender": [
+			"Enterprise_router"
+		],
+		"Operational_router": [
+			"Enterprise_router"
+		],
+		"Op_Server0": [
+			"Operational_router"
+		],
+		"Op_Host0": [
+			"Operational_router"
+		],
+		"Op_Host1": [
+			"Operational_router"
+		],
+		"Op_Host2": [
+			"Operational_router"
+		]
+	},
+	"actions": [],
+	"team": {
+		"agent_0": "Blue",
+		"agent_1": "Blue",
+		"agent_2": "Blue",
+		"agent_3": "Blue",
+		"agent_4": "Blue",
+		"agent_5": "Blue",
+		"agent_6": "Blue",
+		"agent_7": "Blue",
+		"agent_8": "Blue",
+		"agent_9": "Blue",
+		"agent_10": "Blue",
+		"agent_11": "Blue",
+		"agent_12": "Blue",
+		"agent_13": "Blue",
+		"agent_14": "Blue",
+		"agent_15": "Blue"
+	},
+	"background": "blank"
+}

@@ -1,0 +1,89 @@
+Test_Host:
+  Processes:
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 22
+      Transport Protocol: TCP
+    PID: 1091
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: sshd
+    Username: root
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 80
+      Transport Protocol: TCP
+    PID: 1100
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: apache2
+    Username: www-data
+    Process Type: webserver
+    Properties:
+      'rfi'
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 3390
+      Transport Protocol: TCP
+    PID: 1101
+    PPID: 1
+    Path: /etc/init.d
+    Process Name: mysql
+    Username: root
+    Properties:
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 443
+      Transport Protocol: TCP
+    PID: 1100
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: apache2
+    Username: www-data
+    Process Type: webserver
+    Properties:
+      'rfi'
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 25
+      Transport Protocol: TCP
+    PID: 1102
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: smtp
+    Username: root
+    Process Type: smtp
+    Process Version: haraka 2.7.0
+  System info:
+    Architecture: x64
+    OSDistribution: UBUNTU
+    OSType: LINUX
+    OSVersion: U18_04_3
+  User Info:
+    - Groups:
+        - GID: 0
+          Group Name: root
+      UID: 0
+      Username: root
+    - Groups:
+        - GID: 33
+          Group Name: www-data
+      UID: 33
+      Username: www-data
+    - Groups:
+        - GID: 1001
+          Group Name: pi
+      UID: 1001
+      Username: pi
+      Bruteforceable: True
+      Password: raspberry
+    - Groups:
+        - GID: 1000
+          Group Name: ubuntu
+      UID: 1000
+      Username: ubuntu
+    - Groups:
+        - GID: 1001
+          Group Name: GreenAgent
+      UID: 1001
+      Username: GreenAgent

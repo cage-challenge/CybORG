@@ -1,0 +1,22 @@
+## The following code contains work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.
+## Additionally, we waive copyright and related rights in the utilized code worldwide through the CC0 1.0 Universal public domain dedication.
+Kali_Box:
+  path: Kali_Box_image
+Internal:
+  path: Internal_image
+Gateway:
+  path: Gateway_image
+Velociraptor_Server:
+  path: Velociraptor_Server_image
+linux_user_host1:
+  path: linux_user_host_image1
+linux_user_host2:
+  path: linux_user_host_image2
+linux_decoy_host:
+  path: linux_decoy_host_image
+windows_user_host1:
+  path: windows_user_host_image1
+windows_user_host2:
+  path: windows_user_host_image2
+OP_Server:
+  path: OP_Server_image

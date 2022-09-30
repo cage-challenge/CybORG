@@ -1,0 +1,144 @@
+# Copyright DST Group. Licensed under the MIT license.
+Agents:
+  Blue:
+    agent_type: SleepAgent
+    wrappers:
+    actions:
+      - Sleep
+      # Velociraptor Actions
+      - VelociraptorPoll
+      - GetProcessInfo
+      - GetProcessList
+      - GetFileInfo
+    starting_sessions:
+      - name: VeloServer
+        username: ubuntu
+        type: VelociraptorServer
+        hostname: Defender
+        num_children_sessions: 2
+        artfacts:
+          - Generic.Client.Stats
+          - Linux.Events.SSHLogin
+          - Windows.Events.ProcessCreation
+      - name: VeloInternal
+        username: SYSTEM
+        type: VelociraptorClient
+        hostname: Internal
+        parent: VeloServer
+      - name: VeloGateway
+        username: ubuntu
+        type: VelociraptorClient
+        hostname: Gateway
+        parent: VeloServer
+      - username: ubuntu
+        hostname: Defender
+        type: SSH
+        name: VeloServerSSH
+    reward_calculator_type: Disrupt
+    INT:
+      Hosts:
+        Defender:
+          Interfaces: All
+          System info: All
+        Gateway:
+          Interfaces: All
+          System info: All
+        Internal:
+          Interfaces: All
+          System info: All
+    AllowedSubnets:
+      - "Defender_Network"
+      - "Private_Network"
+  Red:
+    agent_type: SleepAgent
+    wrappers:
+    actions:
+      - Sleep
+      - MS17_010_PSExec
+      - SSHLoginExploit
+      - UpgradeToMeterpreter
+      - MSFAutoroute
+      - MSFPingsweep
+      - MSFPortscan
+      - MeterpreterIPConfig
+    starting_sessions:
+      - username: root
+        hostname: Attacker
+        type: MetasploitServer
+        name: MSFServer
+    reward_calculator_type: Pwn
+    INT:
+      Hosts:
+        Attacker:
+          Interfaces: All
+          System info: All
+        Gateway:
+          Interfaces: All
+    AllowedSubnets:
+      - "Attacker_Network"
+      - "Private_Network"
+# List of subnets and which subnets they are connected to
+Subnets:
+  Attacker_Network:
+    Hosts:
+      - Attacker
+    Size: 2
+    NACLs:
+      all:
+        in: all
+        out: all
+  Defender_Network:
+    Hosts:
+      - Defender
+    Size: 2
+    NACLs:
+      Private_Network:
+        in: all
+        out: all
+  Private_Network:
+    Hosts:
+      - Gateway
+      - Internal
+    Size: 4
+    NACLs:
+      "Attacker_Network":
+        in:
+          - Type: SSH
+            Protocol: TCP
+            PortRange: 22
+          - Type: HTTP
+            Protocol: TCP
+            PortRange: 80
+          - Type: Custom TCP
+            Protocol: TCP
+            PortRange:
+              - 32768
+              - 65535
+        out: all
+      Defender_Network:
+        in: all
+        out: all
+# List of hosts, image and value of each dict
+# if no value is provided a default of 0 is used
+Hosts:
+  Attacker:
+    image: Kali_Box
+    AWS_Info:
+      instance_id: i-0391014d48fbe3872
+    ConfidentialityValue: None
+  Internal:
+    image: Internal
+    AWS_Info:
+      instance_id: i-02cfeafc826e46b70    
+    ConfidentialityValue: High
+    value: 1
+  Gateway:
+    image: Gateway
+    AWS_Info:
+      instance_id: i-0fc85ba20bc9b9575
+    ConfidentialityValue: Medium
+  Defender:
+    image: Velociraptor_Server
+    AWS_Info:
+      instance_id: i-070f02104a673fa82
+
