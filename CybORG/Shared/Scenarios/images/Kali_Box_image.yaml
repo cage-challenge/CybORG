@@ -1,0 +1,319 @@
+Test_Host:
+  Processes:
+  - PID: 1
+    PPID: 0
+    Path: /sbin
+    Process Name: init
+    Username: root
+  - PID: 2
+    PPID: 0
+    Process Name: '[kthreadd]'
+    Username: root
+  - PID: 3
+    PPID: 2
+    Process Name: '[rcu_gp]'
+    Username: root
+  - PID: 4
+    PPID: 2
+    Process Name: '[rcu_par_gp]'
+    Username: root
+  - PID: 5
+    PPID: 2
+    Process Name: '[kworker/0:0-events]'
+    Username: root
+  - PID: 6
+    PPID: 2
+    Process Name: '[kworker/0:0H-kblockd]'
+    Username: root
+  - PID: 7
+    PPID: 2
+    Process Name: '[kworker/u30:0-events_unbound]'
+    Username: root
+  - PID: 8
+    PPID: 2
+    Process Name: '[mm_percpu_wq]'
+    Username: root
+  - PID: 9
+    PPID: 2
+    Process Name: '[ksoftirqd/0]'
+    Username: root
+  - PID: 10
+    PPID: 2
+    Process Name: '[rcu_sched]'
+    Username: root
+  - PID: 11
+    PPID: 2
+    Process Name: '[rcu_bh]'
+    Username: root
+  - PID: 12
+    PPID: 2
+    Process Name: '[migration/0]'
+    Username: root
+  - PID: 13
+    PPID: 2
+    Process Name: '[kworker/0:1-events]'
+    Username: root
+  - PID: 14
+    PPID: 2
+    Process Name: '[cpuhp/0]'
+    Username: root
+  - PID: 15
+    PPID: 2
+    Process Name: '[kdevtmpfs]'
+    Username: root
+  - PID: 16
+    PPID: 2
+    Process Name: '[netns]'
+    Username: root
+  - PID: 17
+    PPID: 2
+    Process Name: '[kauditd]'
+    Username: root
+  - PID: 18
+    PPID: 2
+    Process Name: '[xenbus]'
+    Username: root
+  - PID: 19
+    PPID: 2
+    Process Name: '[xenwatch]'
+    Username: root
+  - PID: 20
+    PPID: 2
+    Process Name: '[khungtaskd]'
+    Username: root
+  - PID: 21
+    PPID: 2
+    Process Name: '[oom_reaper]'
+    Username: root
+  - PID: 22
+    PPID: 2
+    Process Name: '[writeback]'
+    Username: root
+  - PID: 23
+    PPID: 2
+    Process Name: '[kcompactd0]'
+    Username: root
+  - PID: 24
+    PPID: 2
+    Process Name: '[ksmd]'
+    Username: root
+  - PID: 25
+    PPID: 2
+    Process Name: '[khugepaged]'
+    Username: root
+  - PID: 26
+    PPID: 2
+    Process Name: '[crypto]'
+    Username: root
+  - PID: 27
+    PPID: 2
+    Process Name: '[kintegrityd]'
+    Username: root
+  - PID: 28
+    PPID: 2
+    Process Name: '[kblockd]'
+    Username: root
+  - PID: 29
+    PPID: 2
+    Process Name: '[edac-poller]'
+    Username: root
+  - PID: 30
+    PPID: 2
+    Process Name: '[devfreq_wq]'
+    Username: root
+  - PID: 31
+    PPID: 2
+    Process Name: '[watchdogd]'
+    Username: root
+  - PID: 33
+    PPID: 2
+    Process Name: '[kworker/0:2-memcg_kmem_cache]'
+    Username: root
+  - PID: 34
+    PPID: 2
+    Process Name: '[kswapd0]'
+    Username: root
+  - PID: 52
+    PPID: 2
+    Process Name: '[kthrotld]'
+    Username: root
+  - PID: 53
+    PPID: 2
+    Process Name: '[ipv6_addrconf]'
+    Username: root
+  - PID: 54
+    PPID: 2
+    Process Name: '[kworker/u30:1-events_unbound]'
+    Username: root
+  - PID: 63
+    PPID: 2
+    Process Name: '[kstrp]'
+    Username: root
+  - PID: 109
+    PPID: 2
+    Process Name: '[ata_sff]'
+    Username: root
+  - PID: 110
+    PPID: 2
+    Process Name: '[scsi_eh_0]'
+    Username: root
+  - PID: 111
+    PPID: 2
+    Process Name: '[scsi_tmf_0]'
+    Username: root
+  - PID: 112
+    PPID: 2
+    Process Name: '[scsi_eh_1]'
+    Username: root
+  - PID: 113
+    PPID: 2
+    Process Name: '[scsi_tmf_1]'
+    Username: root
+  - PID: 114
+    PPID: 2
+    Process Name: '[kworker/u30:2-events_unbound]'
+    Username: root
+  - PID: 123
+    PPID: 2
+    Process Name: '[kworker/u30:3]'
+    Username: root
+  - PID: 173
+    PPID: 2
+    Process Name: '[kworker/0:1H-kblockd]'
+    Username: root
+  - PID: 197
+    PPID: 2
+    Process Name: '[kworker/u31:0]'
+    Username: root
+  - PID: 199
+    PPID: 2
+    Process Name: '[jbd2/xvda1-8]'
+    Username: root
+  - PID: 200
+    PPID: 2
+    Process Name: '[ext4-rsv-conver]'
+    Username: root
+  - PID: 248
+    PPID: 1
+    Path: /lib/systemd
+    Process Name: systemd-journald
+    Username: root
+  - PID: 278
+    PPID: 1
+    Path: /lib/systemd
+    Process Name: systemd-udevd
+    Username: root
+  - PID: 294
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: haveged
+    Username: root
+  - PID: 301
+    PPID: 2
+    Process Name: '[ttm_swap]'
+    Username: root
+  - PID: 660
+    PPID: 1
+    Path: /lib/systemd
+    Process Name: systemd-logind
+    Username: root
+  - PID: 662
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: rsyslogd
+    Username: root
+  - PID: 665
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: ModemManager
+    Username: root
+  - PID: 686
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: cron
+    Username: root
+  - PID: 690
+    PPID: 1
+    Path: /usr/bin
+    Process Name: dbus-daemon
+    Username: message+
+  - PID: 692
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: NetworkManager
+    Username: root
+  - PID: 703
+    PPID: 1
+    Path: /usr/lib/policykit-1
+    Process Name: polkitd
+    Username: root
+  - PID: 714
+    PPID: 1
+    Path: /sbin
+    Process Name: agetty
+    Username: root
+  - PID: 715
+    PPID: 1
+    Path: /sbin
+    Process Name: agetty
+    Username: root
+  - PID: 1048
+    PPID: 718
+    Process Name: 'sshd:'
+    Username: root
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 22
+      Transport Protocol: &id001 "TCP"
+    PID: 718
+    PPID: 1
+    Path: /usr/sbin
+    Process Name: sshd
+    Username: root
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 55553
+      Transport Protocol: *id001
+    PID: 832
+    PPID: 1
+    Process Name: msfrpcd
+    Username: root
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 68
+      Transport Protocol: &id002 "UDP"
+    PID: 516
+    PPID: 1
+    Path: /sbin
+    Process Name: dhclient
+    Username: root
+  - Connections:
+    - local_address: 0.0.0.0
+      local_port: 68
+      Transport Protocol: *id002
+    PID: 435
+    PPID: 1
+    Path: /sbin
+    Process Name: dhclient
+    Username: root
+  System info:
+    Architecture: "x64"
+    OSDistribution: "KALI"
+    OSType: "LINUX"
+    OSVersion: "K2019_4"
+  User Info:
+  - Groups:
+    - GID: 0
+      Group Name: root
+    UID: 0
+    Username: root
+  - Groups:
+    - GID: 33
+      Group Name: www-data
+    UID: 33
+    Username: www-data
+  - Groups:
+    - GID: 1000
+      Group Name: ec2-user
+    UID: 1000
+    Username: ec2-user

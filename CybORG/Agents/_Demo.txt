@@ -1,0 +1,28 @@
+Run _Demo_Red.py
+When prompted to select an agent, enter 0 to choose Red. If you type in 'Red' it won't work.
+The Red Killchain is
+'NmapScan': (1, 'Shell Session on Kali')
+'SambaExploit': (1, 'Linux on Public'), (0, 'Metasploit Session on Kali')
+'UpgradeToMeterpreter': (0, 'Metasploit Session on Kali'), (2, 'Shell Session on Linux')
+'MSFPivot': (3, 'Metasploit Session on Linux'), (0, 'Metasploit Session on Kali')
+'PingSweep': (2, 'Shell Session on Linux'), (1, 'Private')
+'EternalBlue': (3, 'Windows on Private'), (0,'Metasploit Session on Kali')
+'GetShell': (4, 'Metasploit Session on Windows')
+'FindFlag': (5, 'Shell Session on Windows')
+
+Run _Demo_Blue.py
+When prompted, press 1 to select Blue. Don't type in 'Blue'!
+This game you will play against one of the three Red Killchains.
+The Blue Counter Killchain is
+'Velociraptor Poll': (0, 'Velociraptor Server Session')
+'SSHAccess': (1, 'Defender Shell Session'), (3, 'blue'), (1, 'blue_knight'), (1, 'Linux on Blue'), (0,22)
+'Velociraptor Poll': (0, 'Velociraptor Server Session')
+
+Now would be a good time to look at 'PublicFacing': 'Processes'
+Probably the last one on the list, or at least near the bottom will have 'Remote Address' equal to '10.0.0.1'.
+Get the PID of this.
+
+'KillProcessLinux':(4,'Linux Shell Session'), (<index>, <PID>)
+
+Then probably Velociraptor Poll / Sleep and then you will see Red's actions.
+
