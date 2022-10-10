@@ -14,6 +14,13 @@ pip install -e .
 
 
 ## Creating the environment
+Import the necessary classes:
+```
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Agents import RedMeanderAgent, B_lineAgent, SleepAgent
+```
+
 Create a CybORG environment with:
 ```python
 sg = DroneSwarmScenarioGenerator()
