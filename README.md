@@ -17,8 +17,10 @@ pip install -e .
 Import the necessary classes:
 ```
 from CybORG import CybORG
-from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
 from CybORG.Agents import RedMeanderAgent, B_lineAgent, SleepAgent
+from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
+from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelWrapper
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
 ```
 
 Create a CybORG environment with:
