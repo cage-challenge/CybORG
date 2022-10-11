@@ -2,7 +2,6 @@ import numpy as np
 from gym import spaces, Env
 from typing import Union, List, Optional
 
-from CybORG import CybORG
 from prettytable import PrettyTable
 
 from CybORG.Agents.SimpleAgents.BaseAgent import BaseAgent
