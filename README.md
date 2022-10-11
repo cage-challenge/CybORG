@@ -110,7 +110,7 @@ observations, rewards, dones, infos = open_ai_wrapped_cyborg.step({'blue_agent_0
 
  
 
-To evaluate an agent's performance please use the [evaluation script](../../PycharmProjects/CybORG/CybORG/Evaluation/evaluation.py). 
+To evaluate an agent's performance please use the [evaluation script](CybORG/Evaluation/evaluation.py). 
 
  
 
