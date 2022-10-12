@@ -16,7 +16,7 @@ from CybORG.Simulator.Scenarios.FileReaderScenarioGenerator import FileReaderSce
 def test_steps(cyborg_scenario1b):
     agent = 'Red'
     cyborg = OpenAIGymWrapper(agent_name=agent,
-                              env=FixedFlatWrapper(EnumActionWrapper(cyborg_scenario1b)))
+                              env=FixedFlatWrapper(cyborg_scenario1b))
     cyborg.reset()
     action = cyborg.action_space.sample()
     obs, reward, done, info = cyborg.step(action)
@@ -41,7 +41,7 @@ def test_steps(cyborg_scenario1b):
 def test_steps_multi_discrete(cyborg_scenario1b):
     agent = 'Red'
     cyborg = OpenAIGymWrapper(agent_name=agent,
-                              env=FixedFlatWrapper(EnumActionWrapper(cyborg_scenario1b)))
+                              env=FixedFlatWrapper(cyborg_scenario1b))
     cyborg.reset()
     action = cyborg.action_space.sample()
     obs, reward, done, info = cyborg.step(action)
@@ -66,7 +66,7 @@ def test_steps_random(cyborg_scenario1b):
     agent = 'Red'
     path = str(inspect.getfile(CybORG))
     path = path[:-7] + f'/Simulator/Scenarios/scenario_files/Scenario1b.yaml'
-    cyborg = OpenAIGymWrapper(agent_name=agent, env=FixedFlatWrapper(EnumActionWrapper(cyborg_scenario1b)))
+    cyborg = OpenAIGymWrapper(agent_name=agent, env=FixedFlatWrapper(cyborg_scenario1b))
     cyborg.reset()
     original_action = cyborg.action_space.n
     for i in range(100):
@@ -88,7 +88,7 @@ def test_steps_random(cyborg_scenario1b):
 @pytest.mark.skip("Deprecated")
 def test_steps_random_multi_discrete(cyborg_scenario1b):
     agent = 'Red'
-    cyborg = OpenAIGymWrapper(agent_name=agent, env=FixedFlatWrapper(EnumActionWrapper(cyborg_scenario1b)))
+    cyborg = OpenAIGymWrapper(agent_name=agent, env=FixedFlatWrapper(cyborg_scenario1b))
     cyborg.reset()
     original_action = cyborg.action_space.nvec
     for i in range(100):
@@ -112,7 +112,7 @@ def cyborg(request,agents = {'Blue':MonitorAgent(),'Red':B_lineAgent()},seed = 1
     path = str(inspect.getfile(CybORG))
     path = path[:-7] + f'/Simulator/Scenarios/scenario_files/Scenario1b.yaml'
     sg = FileReaderScenarioGenerator(path)
-    env = FixedFlatWrapper(EnumActionWrapper(CybORG(sg, 'sim', agents=agents, seed=seed)))
+    env = FixedFlatWrapper(CybORG(sg, 'sim', agents=agents, seed=seed))
     cyborg = OpenAIGymWrapper(env=env,agent_name=request.param)
     return cyborg
 

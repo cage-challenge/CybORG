@@ -19,7 +19,7 @@ def run_training_example(scenario):
     sg = FileReaderScenarioGenerator(path)
     cyborg = CybORG(scenario_generator=sg)
     cyborg = OpenAIGymWrapper(agent_name=agent_name,
-                              env=FixedFlatWrapper(EnumActionWrapper(cyborg)))
+                              env=FixedFlatWrapper(cyborg))
 
     observation = cyborg.reset()
     action_space = cyborg.action_space

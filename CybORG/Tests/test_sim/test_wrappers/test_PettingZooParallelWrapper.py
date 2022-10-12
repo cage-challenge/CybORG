@@ -16,7 +16,7 @@ from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmSce
 def create_wrapped_cyborg(request):
     sg = DroneSwarmScenarioGenerator()
     cyborg = CybORG(scenario_generator=sg, seed=123)
-    return request.param(env=cyborg, max_steps=100)
+    return request.param(env=cyborg)
 
 
 @pytest.mark.skip('Agents are able to return to life')
@@ -140,7 +140,7 @@ def test_extreme_positions_drones():
     sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=10000,
                                      starting_positions=[np.array([0, 0]), np.array([100, 100])])
     cyborg_raw = CybORG(scenario_generator=sg)
-    cyborg = PettingZooParallelWrapper(env=cyborg_raw, max_steps=100)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     for agent in cyborg.agents:
         obs = cyborg.get_observation(agent)
         assert cyborg.observation_space(agent).contains(obs)
@@ -150,7 +150,7 @@ def test_invalid_positions_drones():
     sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=10000,
                                      starting_positions=[np.array([-1, -1]), np.array([101, 101])])
     cyborg_raw = CybORG(scenario_generator=sg)
-    cyborg = PettingZooParallelWrapper(env=cyborg_raw, max_steps=100)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     for agent in cyborg.agents:
         obs = cyborg.get_observation(agent)
         assert cyborg.observation_space(agent).contains(obs)
@@ -159,7 +159,7 @@ def test_invalid_positions_drones():
 def test_active_agent_in_observation():
     sg = DroneSwarmScenarioGenerator(num_drones=20, max_length_data_links=10, starting_num_red=0)
     cyborg_raw = CybORG(scenario_generator=sg, seed=123)
-    cyborg = PettingZooParallelWrapper(env=cyborg_raw, max_steps=100)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     agents = {agent: RandomAgent() for agent in cyborg.possible_agents}
     action_spaces = cyborg.action_spaces
     for i in range(100):
@@ -181,4 +181,4 @@ def test_observation():
     sg = DroneSwarmScenarioGenerator(num_drones=20, max_length_data_links=10, starting_num_red=0)
     cyborg_raw = CybORG(scenario_generator=sg, seed=123)
 
-    cyborg = PettingZooParallelWrapper(env=cyborg_raw, max_steps=100)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
