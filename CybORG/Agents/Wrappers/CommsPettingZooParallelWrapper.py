@@ -7,8 +7,8 @@ from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelW
 class ActionsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
     """Communicates the action selection to other agents"""
 
-    def __init__(self, env, max_steps: int = 100):
-        super(ActionsCommsPettingZooParallelWrapper, self).__init__(env, max_steps)
+    def __init__(self, env):
+        super(ActionsCommsPettingZooParallelWrapper, self).__init__(env)
         self.num_drones = len(self.ip_addresses)
         self._observation_spaces = {agent_name: spaces.MultiDiscrete(
             [3] + [2 for i in range(self.num_drones)] + [2] + [3 for i in range(self.num_drones)] + [101, 101] + (
@@ -29,8 +29,8 @@ class ActionsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
 class ObsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
     """Communicates part of the previous observation to other agents"""
 
-    def __init__(self, env, max_steps: int = 100):
-        super(ObsCommsPettingZooParallelWrapper, self).__init__(env, max_steps)
+    def __init__(self, env):
+        super(ObsCommsPettingZooParallelWrapper, self).__init__(env)
         self.num_drones = len(self.ip_addresses)
         self._observation_spaces = {agent_name: spaces.MultiDiscrete(
             [3] + [2 for i in range(self.num_drones)] + [2] + [3 for i in range(self.num_drones)] + [101, 101] + (
@@ -78,8 +78,8 @@ class ObsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
 
 class AgentCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
     """Allows agents to select their action"""
-    def __init__(self, env, max_steps: int = 100):
-        super(AgentCommsPettingZooParallelWrapper, self).__init__(env, max_steps)
+    def __init__(self, env):
+        super(AgentCommsPettingZooParallelWrapper, self).__init__(env)
         num_drones = len(self.ip_addresses)
         self.len_actions = {agent: self.action_space(agent).n for agent in self.possible_agents}
         self._action_spaces = {agent: spaces.Discrete(self.len_actions[agent]*self.env.get_message_space(agent).n)

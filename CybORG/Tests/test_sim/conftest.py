@@ -59,7 +59,7 @@ def open_ai_wrapped_cyborg(create_cyborg_sim, request):
     if str(cyborg.scenario_generator).split('/')[-1].rstrip('.yaml') == 'Scenario1' and request.param == 'Blue':
         pytest.skip('Blue agent not operational on scenario1')
     cyborg = OpenAIGymWrapper(agent_name=request.param,
-                              env=FixedFlatWrapper(EnumActionWrapper(cyborg)))
+                              env=FixedFlatWrapper(cyborg))
     return cyborg
 
 

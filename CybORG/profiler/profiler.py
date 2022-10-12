@@ -17,11 +17,11 @@ from CybORG.Simulator.Scenarios.FileReaderScenarioGenerator import FileReaderSce
 def run(path):
     aws = False
     # sg = FileReaderScenarioGenerator(path)
-    sg = DroneSwarmScenarioGenerator(num_drones=20)
+    sg = DroneSwarmScenarioGenerator()
     np_rand, seed = np_random(123)
     def assign_agents(agent_list):
         return {agent: RandomAgent() for agent in agent_list}
-    c = CybORG(scenario_generator=sg, agents=assign_agents(sg.create_scenario(np_rand).agents.keys()))
+    c = CybORG(scenario_generator=sg, agents=assign_agents([f"{j}_agent_{i}" for i in range(sg.num_drones) for j in ['red', 'blue']]))
     try:
         for i in range(100):
             for j in range(1000):

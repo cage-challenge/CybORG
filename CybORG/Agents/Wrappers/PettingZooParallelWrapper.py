@@ -13,7 +13,7 @@ from CybORG.Shared.CommsRewardCalculator import CommsAvailabilityRewardCalculato
 
 
 class PettingZooParallelWrapper(BaseWrapper):
-    def __init__(self, env: CybORG, max_steps: int = 100):
+    def __init__(self, env: CybORG):
         super().__init__(env)
         self._agent_ids = self.possible_agents
         # assuming that the final value in the agent name indicates which drone that agent is on
@@ -28,8 +28,6 @@ class PettingZooParallelWrapper(BaseWrapper):
             [3] + [2 for i in range(num_drones)] + [2] + [3 for i in range(num_drones)] + [101, 101] + (
                     num_drones - 1) * [num_drones, 101, 101, 2]) for agent_name in self.possible_agents}
         self.metadata = {"render_modes": ["human", "rgb_array"], "name": "Cage_Challenge_3"}
-        self.max_steps = max_steps
-        self.step_counter = 0
         self.seed = 117
 
         self.dones = {agent: False for agent in self.possible_agents}
@@ -44,7 +42,6 @@ class PettingZooParallelWrapper(BaseWrapper):
         self.dones = {agent: False for agent in self.possible_agents}
         self.rewards = {agent: 0. for agent in self.possible_agents}
         self.infos = {}
-        self.step_counter = 0
         # assuming that the final value in the agent name indicates which drone that agent is on
         self.agent_host_map = {agent_name: f'drone_{agent_name.split("_")[-1]}' for agent_name in self.possible_agents}
         self.ip_addresses = list(self.env.get_ip_map().values())
@@ -60,9 +57,7 @@ class PettingZooParallelWrapper(BaseWrapper):
         # rews = GreenAvailabilityRewardCalculator(raw_obs, ['green_agent_0','green_agent_1', 'green_agent_2' ]).calculate_reward()
         obs = {agent: self.observation_change(agent, raw_obs[agent]) for agent in self.env.active_agents}
         # obs = {agent: self.observation_change(agent, obs) for agent in self.possible_agents}
-        self.step_counter += 1
         # set done to true if maximumum steps are reached
-        dones = {agent: self.step_counter >= self.max_steps or dones[agent] for agent in self.agents}
         self.dones.update(dones)
         self.rewards = {agent: float(sum(rews[agent].values())) for agent in self.env.active_agents}
         # send messages
