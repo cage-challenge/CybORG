@@ -4,6 +4,7 @@ import numpy as np
 from gym import spaces, Env
 from typing import Union, List, Optional
 
+
 from prettytable import PrettyTable
 
 from CybORG.Agents.SimpleAgents.BaseAgent import BaseAgent
@@ -18,8 +19,8 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         if isinstance(self.get_action_space(self.agent_name), list):
             self.action_space = spaces.MultiDiscrete(self.get_action_space(self.agent_name))
         else:
-            assert isinstance(self.get_action_space(self.agent_name), dict)
-            self.action_space = spaces.Discrete(len(self.get_action_space(self.agent_name)))
+            assert isinstance(self.get_action_space(self.agent_name), int)
+            self.action_space = spaces.Discrete(self.get_action_space(self.agent_name))
         box_len = len(self.observation_change(agent_name, self.env.reset(self.agent_name).observation))
         self.observation_space = spaces.Box(-1.0, 3.0, shape=(box_len,), dtype=np.float32)
         self.reward_range = (float('-inf'), float('inf'))
@@ -34,7 +35,7 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         result.observation = self.observation_change(self.agent_name, result.observation)
         result.action_space = self.action_space_change(result.action_space)
         info = vars(result)
-        return np.array(result.observation), result.reward, result.done, info
+        return np.array(result.observation, dtype=np.float32), result.reward, result.done, info
 
     @property
     def np_random(self):
