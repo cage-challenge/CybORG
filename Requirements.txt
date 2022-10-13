@@ -9,3 +9,4 @@ networkx
 matplotlib
 paramiko
 pygame
+ray==2.0.0
