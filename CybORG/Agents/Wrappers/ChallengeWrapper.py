@@ -15,7 +15,6 @@ class ChallengeWrapper(Env,BaseWrapper):
             raise ValueError('Invalid Agent Name')
 
         env = table_wrapper(env, output_mode='vector')
-        env = EnumActionWrapper(env)
         env = OpenAIGymWrapper(agent_name=agent_name, env=env)
 
         self.env = env

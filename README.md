@@ -14,61 +14,39 @@ pip install -e .
 
 
 ## Creating the environment
-Import the necessary classes:
-```
-from CybORG import CybORG
-from CybORG.Agents import RedMeanderAgent, B_lineAgent, SleepAgent
-from CybORG.Agents.Wrappers import OpenAIGymWrapper, FixedFlatWrapper
-from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelWrapper
-from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
-```
 
-Create a CybORG environment with:
+Create a CybORG environment with the DroneSwarm Scenario that is used for CAGE Challenge 3:
+
 ```python
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+
 sg = DroneSwarmScenarioGenerator()
 cyborg = CybORG(sg, 'sim')
 ```
 
- 
-
-
-To create an environment where the red agent has preexisting knowledge of the network and attempts to beeline to the Operational Server use:
-
- 
+The default_red_agent parameter of the DroneSwarmScenarioGenerator allows you to alter the red agent behaviour. Here is an example of a red agent that randomly selects a drone to exploit and seize control of:
 
 ```python
-red_agent = B_lineAgent()
-cyborg = CybORG(sg, 'sim', agents={'Red': red_agent})
-```
-To create an environment where the red agent meanders through the network and attempts to take control of all hosts in the network use:
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Agents.SimpleAgents.DroneRedAgent import DroneRedAgent
 
- 
-
-```python
-red_agent = RedMeanderAgent()
-cyborg = CybORG(sg, 'sim', agents={'Red': red_agent})
-```
-To create an environment where the red agent always takes the sleep action use:
-```python
-red_agent = SleepAgent()
-cyborg = CybORG(sg, 'sim', agents={'Red': red_agent})
+red_agent = DroneRedAgent
+sg = DroneSwarmScenarioGenerator(default_red_agent=red_agent)
+cyborg = CybORG(sg, 'sim')
 ```
 
- 
 
 ## Wrappers
 
- 
 
 To alter the interface with CybORG, [wrappers](CybORG/Agents/Wrappers) are avaliable.
 
  
 
-* [OpenAIGymWrapper](CybORG/Agents/Wrappers/OpenAIGymWrapper.py) - alters the interface to conform to the OpenAI Gym specification.
+* [OpenAIGymWrapper](CybORG/Agents/Wrappers/OpenAIGymWrapper.py) - alters the interface to conform to the OpenAI Gym specification. Requires the observation to be changed into a fixed size array.
 * [FixedFlatWrapper](CybORG/Agents/Wrappers/FixedFlatWrapper.py) - converts the observation from a dictionary format into a fixed size 1-dimensional vector of floats
-* [EnumActionWrapper](CybORG/Agents/Wrappers/EnumActionWrapper.py) - converts the action space into a single integer
-* [IntListToActionWrapper](CybORG/Agents/Wrappers/IntListToAction.py) - converts the action classes and parameters into a list of integers
-* [BlueTableWrapper](CybORG/Agents/Wrappers/BlueTableWrapper.py) - aggregates information from observations and converts into a 1-dimensional vector of integers
 * [PettingZooParallelWrapper](CybORG/Agents/Wrappers/PettingZooParallelWrapper.py) - alters the interface to conform to the PettingZoo Parallel specification
     * [ActionsCommsPettingZooParallelWrapper](CybORG/Agents/Wrappers/CommsPettingZooParallelWrapper.py) - Extends the PettingZoo Parallel interface to automatically communicate what action an agent performed to other agents
     * [ObsCommsPettingZooParallelWrapper](CybORG/Agents/Wrappers/CommsPettingZooParallelWrapper.py) - Extends the PettingZoo Parallel interface to automatically communicate elements of an agent's observation to other agents
@@ -81,6 +59,11 @@ To alter the interface with CybORG, [wrappers](CybORG/Agents/Wrappers) are avali
 The OpenAI Gym Wrapper allows interaction with a single external agent. The name of that external agent must be specified at the creation of the OpenAI Gym Wrapper.
 
 ```python
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
+from CybORG.Agents.Wrappers.FixedFlatWrapper import FixedFlatWrapper
+
 sg = DroneSwarmScenarioGenerator()
 cyborg = CybORG(sg, 'sim')
 agent_name = 'blue_agent_0'
@@ -93,6 +76,10 @@ observation, reward, done, info = open_ai_wrapped_cyborg.step(0)
 The PettingZoo Parallel Wrapper allows multiple agents to interact with the environment simultaneously.
 
 ```python
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelWrapper
+
 sg = DroneSwarmScenarioGenerator()
 cyborg = CybORG(sg, 'sim')
 open_ai_wrapped_cyborg = PettingZooParallelWrapper(cyborg)
@@ -101,7 +88,19 @@ observations, rewards, dones, infos = open_ai_wrapped_cyborg.step({'blue_agent_0
 
 ### Ray/RLLib wrapper  
 ```python
-# TODO
+from CybORG import CybORG
+from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelWrapper
+from ray.rllib.env import ParallelPettingZooEnv
+from ray.tune import register_env
+
+def env_creator_CC3(env_config: dict):
+    sg = DroneSwarmScenarioGenerator()
+    cyborg = CybORG(scenario_generator=sg, environment='sim')
+    env = ParallelPettingZooEnv(PettingZooParallelWrapper(env=cyborg))
+    return env
+
+register_env(name="CC3", env_creator=env_creator_CC3)
 ```
  
 
@@ -122,10 +121,10 @@ def wrap(env):
 ```
 The agent under evaluation is defined on line 35. 
 To evaluate an agent, extend the [BaseAgent](CybORG/Agents/SimpleAgents/BaseAgent.py). 
-We have included the [BlueLoadAgent](CybORG/Agents/SimpleAgents/BlueLoadAgent.py) as an example of an agent that uses the stable_baselines3 library.
+We have included the [RandomAgent](CybORG/Agents/SimpleAgents/RandomAgent.py) as an example of an agent that performs random actions.
 ```
 # Change this line to load your agent
-agent = BlueLoadAgent()
+agents = {agent: RandomAgent() for agent in wrapped_cyborg.possible_agents}
 ```
 
 ## Additional Readings
