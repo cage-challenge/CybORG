@@ -65,6 +65,7 @@ def test_red_exploit_on_attacked_red(attacked_red):
 
 """Testing SeizeControl"""
 
+
 def test_red_seize_on_unattacked_blue(unattacked_blue):
     cyborg, red_agent, blue_agent, target_agent, target_host, target_ip = unattacked_blue
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
@@ -72,8 +73,9 @@ def test_red_seize_on_unattacked_blue(unattacked_blue):
     assert 'red_agent_' + target_agent.split('_')[-1] not in cyborg.active_agents
     action = SeizeControl(agent=red_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=red_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[red_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       red_agent]) == action
     assert results.observation['success'] == False, cyborg.environment_controller.observation[red_agent].raw
     assert target_agent in cyborg.active_agents
     assert 'red_agent_' + target_agent.split('_')[-1] not in cyborg.active_agents
@@ -87,8 +89,9 @@ def test_red_seize_on_attacked_blue(attacked_blue):
     assert 'red_agent_' + target_agent.split('_')[-1] not in cyborg.active_agents
     action = SeizeControl(agent=red_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=red_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[red_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       red_agent]) == action
     assert results.observation['success'] == True, cyborg.environment_controller.observation[red_agent].raw
     assert target_agent not in cyborg.active_agents
     assert 'red_agent_' + target_agent.split('_')[-1] in cyborg.active_agents
@@ -104,14 +107,16 @@ def test_red_seize_on_unattacked_red(unattacked_red):
     assert 'red_agent_' + target_agent.split('_')[-1] in cyborg.active_agents
     action = SeizeControl(agent=red_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=red_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[red_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       red_agent]) == action
     assert results.observation['success'] == False, cyborg.environment_controller.observation[red_agent].raw
     assert target_agent not in cyborg.active_agents
     assert 'red_agent_' + target_agent.split('_')[-1] in cyborg.active_agents
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
     assert len(cyborg.get_action_space('red_agent_' + target_agent.split('_')[-1])[
                    'session']) > 0, f"{cyborg.get_action_space('red_agent_' + target_agent.split('_')[-1])['session']}"
+
 
 def test_red_seize_on_attacked_red(attacked_red):
     cyborg, red_agent, blue_agent, target_agent, target_host, target_ip, session_id = attacked_red
@@ -120,14 +125,16 @@ def test_red_seize_on_attacked_red(attacked_red):
     assert 'red_agent_' + target_agent.split('_')[-1] in cyborg.active_agents
     action = SeizeControl(agent=red_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=red_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[red_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       red_agent]) == action
     assert results.observation['success'] == True, cyborg.environment_controller.observation[red_agent].raw
     assert target_agent not in cyborg.active_agents
     assert 'red_agent_' + target_agent.split('_')[-1] in cyborg.active_agents
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
     assert len(cyborg.get_action_space('red_agent_' + target_agent.split('_')[-1])[
                    'session']) > 0, f"{cyborg.get_action_space('red_agent_' + target_agent.split('_')[-1])['session']}"
+
 
 """Testing Remove"""
 
@@ -157,8 +164,9 @@ def test_blue_retake_on_unattacked_blue(unattacked_blue):
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
     action = RetakeControl(agent=blue_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=blue_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[blue_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       blue_agent]) == action
     assert results.observation['success'] == False
     assert target_agent in cyborg.active_agents
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
@@ -171,8 +179,9 @@ def test_blue_retake_on_attacked_blue(attacked_blue):
     assert target_agent in cyborg.active_agents
     action = RetakeControl(agent=blue_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=blue_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[blue_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       blue_agent]) == action
     assert results.observation['success'] == False
     assert target_agent in cyborg.active_agents
     assert 'Sessions' in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
@@ -184,8 +193,9 @@ def test_blue_retake_on_unattacked_red(unattacked_red):
     assert target_agent not in cyborg.active_agents
     action = RetakeControl(agent=blue_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=blue_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[blue_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       blue_agent]) == action
     assert results.observation['success'] == True
     assert target_agent in cyborg.active_agents
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
@@ -198,12 +208,14 @@ def test_blue_retake_on_attacked_red(attacked_red):
     assert target_agent not in cyborg.active_agents
     action = RetakeControl(agent=blue_agent, session=0, ip_address=target_ip)
     results = cyborg.step(agent=blue_agent, action=action)
-    assert cyborg.environment_controller.test_valid_action(action,
-                                                           cyborg.environment_controller.agent_interfaces[blue_agent])
+    assert cyborg.environment_controller.replace_action_if_invalid(action,
+                                                                   cyborg.environment_controller.agent_interfaces[
+                                                                       blue_agent]) == action
     assert results.observation['success'] == True
     assert target_agent in cyborg.active_agents
     assert 'Sessions' not in cyborg.get_observation(red_agent).get(target_host, {}), cyborg.get_observation(red_agent)
     assert len(cyborg.get_action_space(target_agent)['session']) > 0
+
 
 def test_remove_always():
     sg = DroneSwarmScenarioGenerator(max_length_data_links=28, num_drones=15, red_spawn_rate=0, starting_num_red=1)
@@ -222,6 +234,7 @@ def test_remove_always():
         # breakpoint()
         cyborg.parallel_step(actions)
 
+
 def test_restore_always():
     sg = DroneSwarmScenarioGenerator(max_length_data_links=28, num_drones=15, red_spawn_rate=0, starting_num_red=1)
     cyborg = CybORG(sg, 'sim')
@@ -233,7 +246,8 @@ def test_restore_always():
 
         for agent in cyborg.active_agents:
             if 'blue' in agent:
-                actions[agent] = RetakeControl(agent=agent, session=0, ip_address=cyborg.get_ip_map()[cyborg.np_random.choice(agent_list)])
+                actions[agent] = RetakeControl(agent=agent, session=0,
+                                               ip_address=cyborg.get_ip_map()[cyborg.np_random.choice(agent_list)])
 
         # breakpoint()
         cyborg.parallel_step(actions)

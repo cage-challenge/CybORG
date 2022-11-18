@@ -125,6 +125,7 @@ class EnvironmentController(CybORGLogger):
                            action_space=self.agent_interfaces[agent].action_space.get_action_space())
 
     def step(self, actions: dict = None, skip_valid_action_check=False):
+
         """Updates the environment based on the joint actions of all agents
         Save the
 
@@ -147,9 +148,9 @@ class EnvironmentController(CybORGLogger):
             agent_object.messages = []
             if agent_name not in actions:
                 actions[agent_name] = agent_object.get_action(self.get_last_observation(agent_name))
-            if not self.test_valid_action(actions[agent_name], agent_object) and not skip_valid_action_check:
-                actions[agent_name] = InvalidAction(action=actions[agent_name])
-                self._log_debug(f"{__class__.__name__} have Invalid Action agent_action={actions[agent_name]} for agent={agent_name}")
+            if not skip_valid_action_check:
+                actions[agent_name] = self.replace_action_if_invalid(actions[agent_name], agent_object)
+
         self.action = actions
         actions = self.sort_action_order(actions)
 
@@ -423,20 +424,32 @@ class EnvironmentController(CybORGLogger):
             )
         return obs
 
-    def test_valid_action(self, action: Action, agent: AgentInterface):
-        # returns true if the parameters in the action are in and true in the action set else return false
+    def replace_action_if_invalid(self, action: Action, agent: AgentInterface):
+        # returns action if the parameters in the action are in and true in the action set else return InvalidAction imbued with bug report.
         action_space = agent.action_space.get_action_space()
-        # first check that the action class is allowed
-        if type(action) not in action_space['action'] or not action_space['action'][type(action)]:
-            return False
+
+        if type(action) not in action_space['action']:
+            message = f'Action {action} not in action space for agent {agent.agent_name}.'
+            return InvalidAction(action=action, error=message)
+
+        if not action_space['action'][type(action)]:
+            message = f'Action {action} is not valid for agent {agent.agent_name} at the moment. This usually means it is trying to access a host it has not discovered yet.'
+            return InvalidAction(action=action, error=message)
+
         # next for each parameter in the action
         for parameter_name, parameter_value in action.get_params().items():
             if parameter_name not in action_space:
                 continue
 
-            if (parameter_value not in action_space[parameter_name]) or (not action_space[parameter_name][parameter_value]):
-                return False
-        return True
+            if parameter_value not in action_space[parameter_name]:
+                message = f'Action {action} has parameter {parameter_name} valued at {parameter_value}. However, {parameter_value} is not in the action space for agent {agent.agent_name}.'
+                return InvalidAction(action=action, error=message)
+
+            if not action_space[parameter_name][parameter_value]:
+                message = f'Action {action} has parameter {parameter_name} valued at the invalid value of {parameter_value}. This usually means an agent is trying to utilise information it has not discovered yet such as an ip_address or port number.'
+                return InvalidAction(action=action, error=message)
+
+        return action
 
     def get_reward_breakdown(self, agent:str):
         return self.agent_interfaces[agent].reward_calculator.host_scores

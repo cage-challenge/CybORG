@@ -43,9 +43,10 @@ class Sleep(Action):
 
 class InvalidAction(Action):
 
-    def __init__(self, action: Action = None):
+    def __init__(self, action: Action = None, error: str =None):
         super().__init__()
         self.action = action
+        self.error = error
 
     def execute(self, state):
         return Observation(success=False)

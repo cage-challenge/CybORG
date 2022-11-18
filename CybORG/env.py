@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 from CybORG.Shared import Observation, Results, CybORGLogger
 from CybORG.Simulator.Actions import DiscoverNetworkServices, DiscoverRemoteSystems, ExploitRemoteService, \
     InvalidAction, \
-    Sleep, PrivilegeEscalate, Impact, Remove, Restore, SeizeControl, RetakeControl, RemoveOtherSessions
+    Sleep, PrivilegeEscalate, Impact, Remove, Restore, SeizeControl, RetakeControl, RemoveOtherSessions, FloodBandwidth
 from CybORG.Simulator.Actions.ConcreteActions.ActivateTrojan import ActivateTrojan
 from CybORG.Simulator.Actions.ConcreteActions.ControlTraffic import BlockTraffic, AllowTraffic
 from CybORG.Simulator.Actions.ConcreteActions.ExploitActions.ExploitAction import ExploitAction
@@ -452,6 +452,8 @@ class CybORG(CybORGLogger):
         red_hosts = []
         red_low_hosts = []
         for agent in self.environment_controller.team['Red']:
+            if not self.environment_controller.is_active(agent):
+                continue
             red_hosts += [i.hostname for i in self.environment_controller.state.sessions[agent].values() if
                           i.username == 'SYSTEM' or i.username == 'root']
             red_low_hosts += [i.hostname for i in self.environment_controller.state.sessions[agent].values()]
@@ -484,14 +486,20 @@ class CybORG(CybORGLogger):
                         red_action_type = 'port scan'
                     elif isinstance(red_action, Impact):
                         red_action_type = 'impact'
+                    elif isinstance(red_action, (AllowTraffic, BlockTraffic, FloodBandwidth)):
+                        red_action_type = None
                     else:
                         red_action_type = type(red_action)
-                    data['actions'].append(
-                        {"agent": red_from, "destination": red_target, "source": red_source, "type": red_action_type})
+
+                    if red_action_type is not None:                    
+                        data['actions'].append(
+                            {"agent": red_from, "destination": red_target, "source": red_source, "type": red_action_type})
 
         blue_hosts = []
         blue_protected_hosts = []
         for agent in self.environment_controller.team['Blue']:
+            if not self.environment_controller.is_active(agent):
+                continue
             blue_hosts += [i.hostname for i in self.environment_controller.state.sessions[agent].values()]
             blue_protected_hosts += [blue_session.hostname for blue_session in
                                     self.environment_controller.state.sessions[agent].values() if

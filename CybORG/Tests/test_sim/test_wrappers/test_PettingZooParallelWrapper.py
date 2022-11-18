@@ -23,6 +23,117 @@ def create_wrapped_cyborg(request):
 def test_petting_zoo_parallel_wrapper(create_wrapped_cyborg):
     parallel_api_test(create_wrapped_cyborg, num_cycles=1000)
 
+#Test if actions inputted are valid
+def test_valid_actions():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=10000, starting_num_red=0)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=123)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+
+    for i in range(50):
+        actions = {}
+        for agent in cyborg.active_agents:
+            actions[agent] = random.randint(0, len(cyborg.get_action_space(agent))-1)
+
+        obs, rews, dones, infos = cyborg.step(actions)
+        for agent in cyborg.active_agents:
+                assert cyborg.get_last_actions(agent) != 'InvalidAction'
+
+#test reward bug 
+def test_equal_reward():
+    sg = DroneSwarmScenarioGenerator(num_drones=17, max_length_data_links=1000, starting_num_red=0)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=123)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+
+    rews_tt = {}
+    for i in range(10):
+        actions = {}
+        for agent in cyborg.agents:
+            actions[agent] = random.randint(0,len(cyborg.get_action_space(agent))-1)
+
+        obs, rews, dones, infos = cyborg.step(actions)
+        rews_tt[i] = rews
+
+    for i in rews_tt.keys():
+        assert len(set(rews_tt[1].values())) == 1
+
+def test_blue_retake_on_red():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+    actions = {}
+
+    if cyborg.active_agents[0] == 'blue_agent_0':
+        actions[cyborg.active_agents[0]]=1
+    else:
+        actions[cyborg.active_agents[0]]=0
+
+    assert len(cyborg.active_agents) == 1
+
+    obs, rews, dones, infos = cyborg.step(actions)
+
+    assert obs[cyborg.active_agents[0]][0] == 0 or 1
+    assert len(cyborg.active_agents) == 2
+
+def test_blue_remove_on_red():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+    actions = {}
+    actions[cyborg.active_agents[0]]=2
+    assert len(cyborg.active_agents) == 1
+
+    obs, rews, dones, infos = cyborg.step(actions)
+
+    assert obs[cyborg.active_agents[0]][0] == 2
+    assert len(cyborg.active_agents) == 1
+
+
+
+def test_blue_retake_on_blue():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=0, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+    actions = {}
+    actions['blue_agent_0']=1
+    actions['blue_agent_1']=0
+
+    assert len(cyborg.active_agents) == 2
+
+    obs, rews, dones, infos = cyborg.step(actions)
+
+    assert obs['blue_agent_0'][0] == 2
+    assert obs['blue_agent_1'][0] == 2
+
+    assert len(cyborg.active_agents) == 2
+
+
+#test blocked IP bug
+def test_block_and_check_IP():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=0, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+
+    actions = {}
+    for i in range(2):
+        count = 0
+        for agent in cyborg.active_agents:
+            actions[agent] = 4 -count
+            count += 1
+        obs, rews, dones, infos = cyborg.step(actions)
+
+    assert obs['blue_agent_0'][2] == 1
+    assert obs['blue_agent_1'][1] == 1
+
 
 def test_attributes(create_wrapped_cyborg):
     # Create cyborg and reset it
@@ -58,6 +169,7 @@ def test_agent_data_change(create_wrapped_cyborg):
 
     for agent in create_wrapped_cyborg.agents:
         assert isinstance(obs[agent], np.ndarray)
+        assert isinstance(create_wrapped_cyborg.action_space(agent), spaces.Discrete)
         assert isinstance(rews[agent], float)
         assert isinstance(dones[agent], bool)
         assert isinstance(infos, dict)
@@ -103,12 +215,12 @@ def test_observation_change(create_wrapped_cyborg):
         actions = {}
         for agent in create_wrapped_cyborg.agents:
             actions[agent] = create_wrapped_cyborg.action_spaces[agent].sample()
+
         obs, rews, dones, infos = create_wrapped_cyborg.step(actions)
-        for agent in create_wrapped_cyborg.agents:
-            assert isinstance(obs[agent], np.ndarray)
-            assert isinstance(rews, dict)
-            assert isinstance(dones, dict)
-            assert isinstance(infos, dict)
+        assert isinstance(obs[agent], np.ndarray)
+        assert isinstance(rews, dict)
+        assert isinstance(dones, dict)
+        assert isinstance(infos, dict)
 
     final_obs = create_wrapped_cyborg.observation_spaces
     assert (initial_obs == final_obs)
@@ -177,8 +289,26 @@ def test_active_agent_in_observation():
             if any(dones.values()):
                 break
 
-def test_observation():
-    sg = DroneSwarmScenarioGenerator(num_drones=20, max_length_data_links=10, starting_num_red=0)
-    cyborg_raw = CybORG(scenario_generator=sg, seed=123)
-
-    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+@pytest.mark.parametrize('num_drones', [2,10,18,25])
+@pytest.mark.parametrize('wrapper', [PettingZooParallelWrapper, AgentCommsPettingZooParallelWrapper, ActionsCommsPettingZooParallelWrapper, ObsCommsPettingZooParallelWrapper])
+def test_observation(num_drones, wrapper):
+    sg = DroneSwarmScenarioGenerator(num_drones=num_drones)
+    cyborg = wrapper(CybORG(scenario_generator=sg, seed=123))
+    cyborg.reset()
+    for i in range(10):
+        for j in range(600):
+            obs, rew, dones, infos = cyborg.step({agent: cyborg.action_space(agent).sample() for agent in cyborg.agents})
+            for agent in cyborg.agents:
+                if type(cyborg) == PettingZooParallelWrapper:
+                    assert len(obs[agent]) == (num_drones*6)
+                elif type(cyborg) == ObsCommsPettingZooParallelWrapper:
+                    assert len(obs[agent]) == (num_drones*22)
+                else:
+                    assert len(obs[agent]) == (num_drones*7)
+            if any(dones.values()) or len(cyborg.agents) == 0:
+                assert all(dones)
+                break
+            if j > 499:
+                breakpoint()
+            assert j <= 500
+        cyborg.reset()
