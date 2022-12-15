@@ -65,17 +65,13 @@ def test_blue_retake_on_red():
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
     actions = {}
-
-    if cyborg.active_agents[0] == 'blue_agent_0':
-        actions[cyborg.active_agents[0]]=1
-    else:
-        actions[cyborg.active_agents[0]]=0
+    actions['blue_agent_0']=1
 
     assert len(cyborg.active_agents) == 1
 
     obs, rews, dones, infos = cyborg.step(actions)
 
-    assert obs[cyborg.active_agents[0]][0] == 0 or 1
+    assert obs['blue_agent_0'][0] == 0
     assert len(cyborg.active_agents) == 2
 
 def test_blue_remove_on_red():
@@ -85,12 +81,13 @@ def test_blue_remove_on_red():
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
     actions = {}
-    actions[cyborg.active_agents[0]]=2
+    actions['blue_agent_0']=2
+
     assert len(cyborg.active_agents) == 1
 
     obs, rews, dones, infos = cyborg.step(actions)
 
-    assert obs[cyborg.active_agents[0]][0] == 2
+    assert obs['blue_agent_0'][0] == 2
     assert len(cyborg.active_agents) == 1
 
 
