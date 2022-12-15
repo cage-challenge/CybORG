@@ -2,13 +2,13 @@ import inspect
 
 import numpy as np
 from gym import spaces, Env
-from typing import Union, List, Optional
-
+from typing import Union, List, Optional, Tuple
 
 from prettytable import PrettyTable
 
 from CybORG.Agents.SimpleAgents.BaseAgent import BaseAgent
 from CybORG.Agents.Wrappers.BaseWrapper import BaseWrapper
+
 
 
 class OpenAIGymWrapper(Env, BaseWrapper):
@@ -27,7 +27,7 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         self.metadata = {}
         self.action = None
 
-    def step(self, action: Union[int, List[int]] = None) -> (object, float, bool, dict):
+    def step(self, action: Union[int, List[int]] = None) -> Tuple[object, float, bool, dict]:
         if action is not None:
             action = self.possible_actions[action]
         self.action = action
@@ -50,41 +50,8 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         else:
             return np.array(result.observation, dtype=np.float32)
 
-    def render(self, mode):
-        # TODO: If FixedFlatWrapper it will error out!
-        if mode == 'human':
-            self.env.render(mode)
-        else:
-            if self.agent_name == 'Red':
-                table = PrettyTable({
-                    'Subnet',
-                    'IP Address',
-                    'Hostname',
-                    'Scanned',
-                    'Access',
-                })
-                for ip in self.get_attr('red_info'):
-                    table.add_row(self.get_attr('red_info')[ip])
-                table.sortby = 'IP Address'
-                if self.action is not None:
-                    _action = self.get_attr('possible_actions')[self.action]
-                    return print(f'\nRed Action: {_action}\n{table}')
-            elif self.agent_name == 'Blue':
-                table = PrettyTable({
-                    'Subnet',
-                    'IP Address',
-                    'Hostname',
-                    'Activity',
-                    'Compromised',
-                })
-                for hostid in self.get_attr('info'):
-                    table.add_row(self.get_attr('info')[hostid])
-                table.sortby = 'Hostname'
-                if self.action is not None:
-                    _action = self.get_attr('possible_actions')[self.action]
-                    red_action = self.get_last_action(agent=self.agent_name)
-                    return print(f'\nBlue Action: {_action}\nRed Action: {red_action}\n{table}')
-            return print(table)
+    def render(self, mode='human'):
+        return self.env.render(mode)
 
     def get_attr(self,attribute:str):
         return self.env.get_attr(attribute)
@@ -108,8 +75,6 @@ class OpenAIGymWrapper(Env, BaseWrapper):
 
     def get_rewards(self):
         return self.get_attr('get_rewards')()
-
-
 
     def action_space_change(self, action_space: dict) -> int:
         assert type(action_space) is dict, \
