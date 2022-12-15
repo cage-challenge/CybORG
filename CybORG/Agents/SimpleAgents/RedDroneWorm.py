@@ -55,7 +55,7 @@ class RedDroneWormAgent(BaseAgent):
             # behaviour 2 is to sleep any intercept any incoming data
             return Sleep()
         if self.behaviour_type == 3:
-            # behaviour 3 is to exploit neighbouring drones
+            # behaviour 3 is to exploit drones that are the furthest away
             if self.target_ip is None or observation['success'] != True:
                 # if not previously targetted a drone, target a new drone
                 locations = {v['Interface'][0]['IP Address']: v['System info']['position'] for k, v in
