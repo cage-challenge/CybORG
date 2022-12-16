@@ -23,6 +23,8 @@ def create_wrapped_cyborg(request):
 def test_petting_zoo_parallel_wrapper(create_wrapped_cyborg):
     parallel_api_test(create_wrapped_cyborg, num_cycles=1000)
 
+
+
 #Test if actions inputted are valid
 def test_valid_actions():
     sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=10000, starting_num_red=0)
@@ -58,38 +60,78 @@ def test_equal_reward():
     for i in rews_tt.keys():
         assert len(set(rews_tt[1].values())) == 1
 
+
 def test_blue_retake_on_red():
-    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
-                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
-    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=1000000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([0.1,0.1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=111)
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
     actions = {}
-    actions['blue_agent_0']=1
+
+    if cyborg.active_agents[0] == 'blue_agent_0':
+        agent = cyborg.active_agents[0]
+        actions[cyborg.active_agents[0]]=1
+    else:
+        agent = cyborg.active_agents[0]
+        actions[cyborg.active_agents[0]]=0
+
 
     assert len(cyborg.active_agents) == 1
-
     obs, rews, dones, infos = cyborg.step(actions)
 
-    assert obs['blue_agent_0'][0] == 0
+    assert obs[agent][0] == 0
     assert len(cyborg.active_agents) == 2
 
-def test_blue_remove_on_red():
-    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+def test_action_space():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, starting_num_red=1)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=123)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+
+    breakpoint()
+    for i in range(cyborg.action_space):
+        actions = {}
+        for j in range(len(cyborg.active_agents)):
+            actions[cyborg.active_agents[j]] = i
+
+        obs, rews, dones, infos = cyborg.step(actions)
+
+        if i == 0:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 0')
+        elif i == 1:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 1')
+        elif i == 2:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RemoveOtherSessions blue_agent_0')
+        elif i == 3:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
+        elif i == 4:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
+        elif i == 5:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
+        elif i == 6:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
+        elif i == 7:
+            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'Sleep')
+       
+
+def test_blue_remove_on_itself_no_red():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=0, red_spawn_rate=0,
                                     starting_positions=[np.array([0, 0]), np.array([1,1])])
     cyborg_raw = CybORG(scenario_generator=sg, seed=110)
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
     actions = {}
-    actions['blue_agent_0']=2
 
-    assert len(cyborg.active_agents) == 1
+    for i in range(len(cyborg.active_agents)):
+        actions[cyborg.active_agents[i]]=2
+
+    assert len(cyborg.active_agents) == 2
 
     obs, rews, dones, infos = cyborg.step(actions)
 
-    assert obs['blue_agent_0'][0] == 2
-    assert len(cyborg.active_agents) == 1
-
+    assert obs[cyborg.active_agents[i]][0] == 2
+    assert len(cyborg.active_agents) == 2
 
 
 def test_blue_retake_on_blue():

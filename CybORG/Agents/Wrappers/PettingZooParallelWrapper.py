@@ -162,16 +162,15 @@ class PettingZooParallelWrapper(BaseWrapper):
 
     def int_to_cyborg_action(self):
         '''
-        Returns a dictionary containing dictionaries that maps the number selected by the agent to a specific CybORG action only for blue agent
+        Returns a dictionary containing dictionaries that maps the number selected by the agent to a specific CybORG action
 
         '''
         cyborg_agent_actions = {}
-        for agent in self.possible_agents:
-            if 'blue' not in agent:
-                continue
+        for agent in self.active_agents:
             cyborg_action_to_int = {}
             act_count = 0
-            for action in self.env.get_action_space(agent)['action'].keys():
+            for action in self.env.get_action_space(self.active_agents[0])['action'].keys():
+                print(self.env.get_action_space(self.active_agents[0])['action'].keys())
                 params_dict = {}
                 if action.__name__ == 'Sleep':
                     cyborg_action_to_int[act_count] = Sleep()
@@ -182,8 +181,8 @@ class PettingZooParallelWrapper(BaseWrapper):
                     cyborg_action_to_int[act_count] = action(**params_dict)
                     act_count+=1
                 else:
-                    for ip in self.env.get_action_space(agent)['ip_address'].keys():
-                        for sess in self.env.get_action_space(agent)['session'].keys():
+                    for ip in self.env.get_action_space(self.active_agents[0])['ip_address'].keys():
+                        for sess in self.env.get_action_space(self.active_agents[0])['session'].keys():
                             if sess == 0:
                                 params_dict['session'] = 0
                                 params_dict['ip_address'] = ip
@@ -219,9 +218,8 @@ class PettingZooParallelWrapper(BaseWrapper):
             elif act == 'RemoveOtherSessions':
                 unmasked_as.append(f'RemoveOtherSessions {this_agent}')
             else:
-                for agent in self.possible_agents:
+                for agent in self.agent_host_map.values():
                     unmasked_as.append(f"{act} {agent}")
-
         return unmasked_as
 
     def observation_change(self, agent: str, obs: dict):
