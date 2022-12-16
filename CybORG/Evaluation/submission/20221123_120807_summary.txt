@@ -1,0 +1,3 @@
+CybORG v2.0, Scenario3
+author: Max, team: Example Submission, technique: Random Agents
+Average reward is: -4383.83 with a standard deviation of 1603.0438159509508Using agents {'blue_agent_0': RandomAgent, 'blue_agent_1': RandomAgent, 'blue_agent_2': RandomAgent, 'blue_agent_3': RandomAgent, 'blue_agent_4': RandomAgent, 'blue_agent_5': RandomAgent, 'blue_agent_6': RandomAgent, 'blue_agent_7': RandomAgent, 'blue_agent_8': RandomAgent, 'blue_agent_9': RandomAgent, 'blue_agent_10': RandomAgent, 'blue_agent_11': RandomAgent, 'blue_agent_12': RandomAgent, 'blue_agent_13': RandomAgent, 'blue_agent_14': RandomAgent, 'blue_agent_15': RandomAgent, 'blue_agent_16': RandomAgent, 'blue_agent_17': RandomAgent}
