@@ -42,6 +42,4 @@ class AllowTraffic(LocalAction):
             if other_hostname in state.blocks[hostname]:
                 state.blocks[hostname].remove(other_hostname)
                 return Observation(True)
-        else:
-            state.blocks[hostname] = [other_hostname]
         return Observation(False)
