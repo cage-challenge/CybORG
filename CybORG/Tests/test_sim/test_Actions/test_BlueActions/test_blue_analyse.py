@@ -282,6 +282,7 @@ def cyborg(request,agents = {'Red':B_lineAgent()},seed = 1):
     cyborg = CybORG(sg, 'sim', agents=agents, seed=seed)
     return cyborg
 
+@pytest.mark.skip('test no longer valid')
 def test_analyse_bug_aug19(cyborg):
     cyborg.reset()
     for i in range(10):

@@ -170,7 +170,6 @@ class PettingZooParallelWrapper(BaseWrapper):
             cyborg_action_to_int = {}
             act_count = 0
             for action in self.env.get_action_space(self.active_agents[0])['action'].keys():
-                print(self.env.get_action_space(self.active_agents[0])['action'].keys())
                 params_dict = {}
                 if action.__name__ == 'Sleep':
                     cyborg_action_to_int[act_count] = Sleep()
@@ -262,10 +261,11 @@ class PettingZooParallelWrapper(BaseWrapper):
                     index += 1
                     # add flagged messages
                     for i, ip in enumerate(self.ip_addresses):
-                        # TODO add in check for network connections
-                        new_obs[index + i] = 1 if ip in [network_conn  for interface in
-                                                 obs[own_host_name]['Interface'] if
-                                                 'Network Connections' in interface for network_conn in interface['Network Connections']] else 0
+                        new_obs[index + i] = 1 if ip in [network_conn['local_address']
+                                                         for interface in obs[own_host_name]['Interface']
+                                                         if 'NetworkConnections' in interface
+                                                         for network_conn in interface['NetworkConnections']] \
+                            else 0
                     index += len(self.ip_addresses)
 
                     pos = obs[own_host_name]['System info'].get('position', (0, 0))

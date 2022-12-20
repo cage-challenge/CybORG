@@ -7,10 +7,13 @@ from gym import spaces
 from pettingzoo.test import parallel_api_test
 
 from CybORG import CybORG
-from CybORG.Agents import RandomAgent
+from CybORG.Agents import RandomAgent, DroneRedAgent, SleepAgent
 from CybORG.Agents.Wrappers.CommsPettingZooParallelWrapper import AgentCommsPettingZooParallelWrapper, ActionsCommsPettingZooParallelWrapper, ObsCommsPettingZooParallelWrapper
 from CybORG.Agents.Wrappers.PettingZooParallelWrapper import PettingZooParallelWrapper
+from CybORG.Simulator.Actions import ExploitDroneVulnerability
 from CybORG.Simulator.Scenarios.DroneSwarmScenarioGenerator import DroneSwarmScenarioGenerator
+from CybORG.Tests.utils import AlwaysTrueGenerator
+
 
 @pytest.fixture(scope="function", params=[PettingZooParallelWrapper, AgentCommsPettingZooParallelWrapper, ActionsCommsPettingZooParallelWrapper, ObsCommsPettingZooParallelWrapper])
 def create_wrapped_cyborg(request):
@@ -62,9 +65,9 @@ def test_equal_reward():
 
 
 def test_blue_retake_on_red():
-    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=1000000, starting_num_red=1, red_spawn_rate=0,
-                                    starting_positions=[np.array([0, 0]), np.array([0.1,0.1])])
-    cyborg_raw = CybORG(scenario_generator=sg, seed=111)
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
     actions = {}
@@ -72,16 +75,40 @@ def test_blue_retake_on_red():
     if cyborg.active_agents[0] == 'blue_agent_0':
         agent = cyborg.active_agents[0]
         actions[cyborg.active_agents[0]]=1
+        own_id = 0
+        id = 1
     else:
         agent = cyborg.active_agents[0]
         actions[cyborg.active_agents[0]]=0
+        own_id = 1
+        id = 0
 
 
     assert len(cyborg.active_agents) == 1
+    # get position before step because obs returns old position
+    pos = {h: [max(int(p), 0) for p in v.position] for h, v in cyborg.unwrapped.environment_controller.state.hosts.items()}
+
     obs, rews, dones, infos = cyborg.step(actions)
 
+    # action succeeded
     assert obs[agent][0] == 0
+    # no blocks
+    assert all(obs[agent][1:3] == [0,0])
+    # no malicious host activity
+    assert obs[agent][3] == 0
+    # malicious network activity
+    assert all(obs[agent][4:6] == [0,0])
+    # drone position
+    assert all(obs[agent][6:8] == pos[f"drone_{own_id}"])
+    # other drone id
+    assert obs[agent][8] == id
+    # other drone position after movement
+    assert all(obs[agent][9:11] == pos[f"drone_{id}"])
+    # no new session on host
+    assert obs[agent][11] == 0
+    assert len(obs[agent]) == 12
     assert len(cyborg.active_agents) == 2
+
 
 def test_action_space():
     sg = DroneSwarmScenarioGenerator(num_drones=2, starting_num_red=1)
@@ -89,7 +116,6 @@ def test_action_space():
     cyborg = PettingZooParallelWrapper(env=cyborg_raw)
     cyborg.reset()
 
-    breakpoint()
     for i in range(cyborg.action_space):
         actions = {}
         for j in range(len(cyborg.active_agents)):
@@ -98,22 +124,21 @@ def test_action_space():
         obs, rews, dones, infos = cyborg.step(actions)
 
         if i == 0:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 0')
         elif i == 1:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 1')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'RetakeControl drone 1')
         elif i == 2:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'RemoveOtherSessions blue_agent_0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'RemoveOtherSessions blue_agent_0')
         elif i == 3:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
         elif i == 4:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'BlockTraffic drone 0')
         elif i == 5:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
         elif i == 6:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'AllowTraffic drone 0')
         elif i == 7:
-            assert(cyborg.get_last_action(cyborg.active_agents[0]) == 'Sleep')
-       
+            assert (cyborg.get_last_action(cyborg.active_agents[0]) == 'Sleep')
 
 def test_blue_remove_on_itself_no_red():
     sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=0, red_spawn_rate=0,
@@ -124,7 +149,7 @@ def test_blue_remove_on_itself_no_red():
     actions = {}
 
     for i in range(len(cyborg.active_agents)):
-        actions[cyborg.active_agents[i]]=2
+        actions[cyborg.active_agents[i]] = 2
 
     assert len(cyborg.active_agents) == 2
 
@@ -132,6 +157,45 @@ def test_blue_remove_on_itself_no_red():
 
     assert obs[cyborg.active_agents[i]][0] == 2
     assert len(cyborg.active_agents) == 2
+
+def test_blue_remove_on_red():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])])
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+    actions = {}
+    agent = cyborg.active_agents[0]
+    own_id = int(agent.split('_')[-1])
+    other_id = (own_id + 1) % 2
+    actions[agent] = 2
+
+    assert len(cyborg.active_agents) == 1
+    # get position before step because obs returns old position
+    pos = {h: [max(int(p), 0) for p in v.position] for h, v in cyborg.unwrapped.environment_controller.state.hosts.items()}
+
+    obs, rews, dones, infos = cyborg.step(actions)
+
+    # action failed
+    assert obs[agent][0] == 2
+    # no blocks
+    assert all(obs[agent][1:3] == [0,0])
+    # no malicious host activity
+    assert obs[agent][3] == 0
+    # malicious network activity
+    assert all(obs[agent][4:6] == [0,0])
+    # drone position
+    assert all(obs[agent][6:8] == pos[f"drone_{own_id}"])
+    # other drone id
+    assert obs[agent][8] == other_id
+    # other drone position
+    assert all(obs[agent][9:11] == pos[f"drone_{other_id}"])
+    # no new session on host
+    assert obs[agent][11] == 0
+    assert len(obs[agent]) == 12
+
+    assert len(cyborg.active_agents) == 1
+
 
 
 def test_blue_retake_on_blue():
@@ -145,11 +209,46 @@ def test_blue_retake_on_blue():
     actions['blue_agent_1']=0
 
     assert len(cyborg.active_agents) == 2
+    # get position before step because obs returns old position
+    pos = {h: [max(int(p), 0) for p in v.position] for h, v in cyborg.unwrapped.environment_controller.state.hosts.items()}
 
     obs, rews, dones, infos = cyborg.step(actions)
 
+    # action failed
     assert obs['blue_agent_0'][0] == 2
+    # no blocks
+    assert all(obs['blue_agent_0'][1:3] == [0, 0])
+    # no malicious host activity
+    assert obs['blue_agent_0'][3] == 0
+    # malicious network activity
+    assert all(obs['blue_agent_0'][4:6] == [0, 0])
+    # drone position
+    assert all(obs['blue_agent_0'][6:8] == pos['drone_0'])
+    # other drone id
+    assert obs['blue_agent_0'][8] == 1
+    # other drone position
+    assert all(obs['blue_agent_0'][9:11] == pos['drone_1'])
+    # no new session on host
+    assert obs['blue_agent_0'][11] == 0
+    assert len(obs['blue_agent_0']) == 12
+
+    # action failed
     assert obs['blue_agent_1'][0] == 2
+    # no blocks
+    assert all(obs['blue_agent_1'][1:3] == [0, 0])
+    # no malicious host activity
+    assert obs['blue_agent_1'][3] == 0
+    # malicious network activity
+    assert all(obs['blue_agent_1'][4:6] == [0, 0])
+    # drone position
+    assert all(obs['blue_agent_1'][6:8] == pos['drone_1'])
+    # other drone id
+    assert obs['blue_agent_1'][8] == 0
+    # other drone position
+    assert all(obs['blue_agent_1'][9:11] == pos['drone_0'])
+    # no new session on host
+    assert obs['blue_agent_1'][11] == 0
+    assert len(obs['blue_agent_1']) == 12
 
     assert len(cyborg.active_agents) == 2
 
@@ -168,10 +267,138 @@ def test_block_and_check_IP():
         for agent in cyborg.active_agents:
             actions[agent] = 4 -count
             count += 1
+
+        # get position before step because obs returns old position
+        pos = {h: [max(int(p), 0) for p in v.position] for h, v in
+               cyborg.unwrapped.environment_controller.state.hosts.items()}
+
         obs, rews, dones, infos = cyborg.step(actions)
 
-    assert obs['blue_agent_0'][2] == 1
-    assert obs['blue_agent_1'][1] == 1
+        # action success until second attempt then fail
+        assert obs['blue_agent_0'][0] == 0 if i == 0 else 2
+        # block against other drone
+        assert all(obs['blue_agent_0'][1:3] == [0, 1])
+        # no malicious host activity
+        assert obs['blue_agent_0'][3] == 0
+        # malicious network activity found because green is blocked
+        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [1, 0])
+        # drone position
+        assert all(obs['blue_agent_0'][6:8] == pos["drone_0"])
+        # other drone id
+        assert obs['blue_agent_0'][8] == 1
+        # other drone position
+        assert all(obs['blue_agent_0'][9:11] == pos["drone_1"])
+        # no new session on host
+        assert obs['blue_agent_0'][11] == 0
+        assert len(obs['blue_agent_0']) == 12
+
+        # action success until second attempt then fail
+        assert obs['blue_agent_1'][0] == 0 if i == 0 else 2
+        # block against other drone
+        assert all(obs['blue_agent_1'][1:3] == [1, 0])
+        # no malicious host activity
+        assert obs['blue_agent_1'][3] == 0
+        # malicious network activity
+        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [1, 0])
+        # drone position
+        assert all(obs['blue_agent_1'][6:8] == pos["drone_1"])
+        # other drone id
+        assert obs['blue_agent_1'][8] == 0
+        # other drone position
+        assert all(obs['blue_agent_1'][9:11] == pos["drone_0"])
+        # no new session on host
+        assert obs['blue_agent_1'][11] == 0
+        assert len(obs['blue_agent_1']) == 12
+
+#test missing obs
+def test_blue_observes_red_network():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])], default_red_agent=SleepAgent)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+
+    actions = {}
+    # first block the other drone
+    assert 'blue_agent_0' in cyborg.active_agents
+    actions['blue_agent_0'] = 4
+    obs, rews, dones, infos = cyborg.step(actions)
+
+    # action success until second attempt then fail
+    assert obs['blue_agent_0'][0] == 0
+    # block against other drone
+    assert all(obs['blue_agent_0'][1:3] == [0, 1])
+    # no malicious host activity
+    assert obs['blue_agent_0'][3] == 0
+    # malicious network activity
+    assert all(obs['blue_agent_0'][4:6] == [0, 0])
+    # drone position
+    assert all(obs['blue_agent_0'][6:8] == [0, 0])
+    # other drone id
+    assert obs['blue_agent_0'][8] == 1
+    # other drone position
+    assert all(obs['blue_agent_0'][9:11] == [1, 0])
+    # no new session on host
+    assert obs['blue_agent_0'][11] == 0
+    assert len(obs['blue_agent_0']) == 12
+
+    cyborg.unwrapped.step(agent='red_agent_1', action=ExploitDroneVulnerability(agent='red_agent_1', session=0,
+                                                                                ip_address=cyborg.unwrapped.get_ip_map()['drone_0']))
+
+    obs = cyborg.get_observation('blue_agent_0')
+
+    # action second attempt fail
+    assert obs[0] == 1
+    # block against other drone
+    assert all(obs[1:3] == [0, 1])
+    # no malicious host activity
+    assert obs[3] == 0
+    # malicious network activity
+    assert all(obs[4:6] == [1, 0])
+    # drone position
+    assert all(obs[6:8] == [0, 0])
+    # other drone id
+    assert obs[8] == 1
+    # other drone position
+    assert all(obs[9:11] == [1, 1])
+    # no new session on host
+    assert obs[11] == 0
+    assert len(obs) == 12
+
+#test missing obs
+def test_blue_observes_red():
+    sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
+                                    starting_positions=[np.array([0, 0]), np.array([1,1])], default_red_agent=SleepAgent)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=110)
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    cyborg.reset()
+    blue_agent_num = 0
+    red_agent_num = 1
+    assert f'blue_agent_{blue_agent_num}' in cyborg.active_agents
+    action = ExploitDroneVulnerability(agent=f'red_agent_{red_agent_num}', session=0,
+                                                                                ip_address=cyborg.unwrapped.get_ip_map()[f'drone_{blue_agent_num}'])
+    action.detection_rate = 10.
+    cyborg.unwrapped.step(agent=f'red_agent_{red_agent_num}', action=action)
+
+    obs = cyborg.get_observation(f'blue_agent_{blue_agent_num}')
+
+    # action second attempt fail
+    assert obs[0] == 1
+    # block against other drone
+    assert all(obs[1:3] == [0, 0])
+    # no malicious host activity
+    assert obs[3] == 1
+    # malicious network activity
+    assert all(obs[4:6] == [1, 0])
+    # drone position
+    assert all(obs[6:8] == [0, 0])
+    # other drone id
+    assert obs[8] == 1
+    # other drone position
+    assert all(obs[9:11] == [1, 0])
+    # no new session on host
+    assert obs[11] == 0
+    assert len(obs) == 12
 
 
 def test_attributes(create_wrapped_cyborg):
