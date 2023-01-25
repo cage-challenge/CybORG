@@ -70,7 +70,7 @@ class SeizeControl(LocalAction):
             path = '/tmp/'
             # upgrade session to new username
             target_session.username = "root"
-            state.sessions_count[target_session.agent] -= 1
+            # determine new agent name from hostname and acting agent
             target_session.agent = '_'.join(self.agent.split('_')[:-1]) + '_' + hostname.split('_')[-1]
             state.sessions[target_session.agent][0] = state.sessions[self.agent].pop(target_session.ident)
             # if target_session.ident in state.sessions[self.agent][0].children:
@@ -80,18 +80,19 @@ class SeizeControl(LocalAction):
             target_session.parent = None
             target_host.sessions[self.agent].remove(target_session.ident)
             target_session.ident = 0
-            state.sessions_count[target_session.agent] += 1
-            target_host.sessions[target_session.agent].append(target_session.ident)
-            target_host.get_process(target_session.pid).user = "root"
-            if 'red' in self.agent:
-                session_type = SessionType.RED_DRONE_SESSION
-            elif 'blue' in self.agent:
-                session_type = SessionType.BLUE_DRONE_SESSION
-            else:
-                session_type = target_session.session_type
-            target_session.session_type = session_type
-            target_host.add_file(f'escalate.{ext}', path, "root", 7,
-                    density=0.9, signed=False)
+            if 0 not in target_host.sessions[target_session.agent]:
+                state.sessions_count[target_session.agent] += 1
+                target_host.sessions[target_session.agent].append(target_session.ident)
+                target_host.get_process(target_session.pid).user = "root"
+                if 'red' in self.agent:
+                    session_type = SessionType.RED_DRONE_SESSION
+                elif 'blue' in self.agent:
+                    session_type = SessionType.BLUE_DRONE_SESSION
+                else:
+                    session_type = target_session.session_type
+                target_session.session_type = session_type
+                target_host.add_file(f'escalate.{ext}', path, "root", 7,
+                        density=0.9, signed=False)
             obs.set_success(True)
         if obs.data['success'] is not TrinaryEnum.TRUE:
             return obs

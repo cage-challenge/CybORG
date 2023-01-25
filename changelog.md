@@ -1,4 +1,8 @@
 # CybORG Changelog
+## Version 3.1
+- Model of bandwidth usage changed to now randomly sample actions to use bandwidth and dropping actions after the bandwidth usage is exceeded
+- Parallel Step function now also returns data for agents that took an action as well as active agents in the environment
+- The balance of the DroneSwarm Scenario has been changed to weaken the effectiveness of the RetakeControl action and increase the effectiveness of the RemoveOtherSessions action
 ## Version 3.0
 - DroneSwarm Scenario added for CAGE Challenge 3
 - Scenarios are now created by a ScenarioGenerator object

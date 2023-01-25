@@ -31,7 +31,7 @@ class DroneSwarmScenarioGenerator(ScenarioGenerator):
     """Creates a drone swarm scenario"""
 
     def __init__(self, max_length_data_links=30, data_link_bandwidth=100, num_drones=18, starting_num_red=0,
-                 starting_positions=None, default_red_agent=None, red_spawn_rate: float = 0.1,
+                 starting_positions=None, default_red_agent=None, red_spawn_rate: float = 0.05,
                  red_internal_only: bool = True, agent_to_drone_mapping: dict = None, maximum_steps: int = 500, all_external=False):
         super().__init__()
         self.background = "map_background"

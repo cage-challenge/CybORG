@@ -13,6 +13,7 @@ class ActionsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
         self._observation_spaces = {agent_name: spaces.MultiDiscrete(
             [3] + [2 for i in range(self.num_drones)] + [2] + [3 for i in range(self.num_drones)] + [101, 101] + (
                     self.num_drones - 1) * [self.num_drones, 101, 101, 2] + self.num_drones*[self.action_space(agent_name).n+1]) for agent_name in self.possible_agents}
+        self.msg_len = self.num_drones
         self.encoding = {agent: {i: [int(x) for x in bin(i)[2:].zfill(self.env.get_message_space(agent).n)] for i in range(self.action_space(agent).n)} for agent in self.env.agents}
         self.decoding = {agent: {str(v): k for k, v in self.encoding[agent].items()} for agent in self.env.agents}
 
@@ -35,6 +36,7 @@ class ObsCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
         self._observation_spaces = {agent_name: spaces.MultiDiscrete(
             [3] + [2 for i in range(self.num_drones)] + [2] + [3 for i in range(self.num_drones)] + [101, 101] + (
                     self.num_drones - 1) * [self.num_drones, 101, 101, 2] + [2 for _ in range(self.env.get_message_space('blue_agent_0').n)]*self.num_drones) for agent_name in self.possible_agents}
+        self.msg_len = self.num_drones * self.env.get_message_space('blue_agent_0').n
 
     def parse_message(self, message: list, agent_name: str):
         new_message = message
@@ -88,6 +90,7 @@ class AgentCommsPettingZooParallelWrapper(PettingZooParallelWrapper):
         self._observation_spaces = {agent_name: spaces.MultiDiscrete(
             [3] + [2 for i in range(num_drones)] + [2] + [3 for i in range(num_drones)] + [101, 101] + (
                     num_drones - 1) * [num_drones, 101, 101, 2] + num_drones*[self.action_space(agent_name).n+1]) for agent_name in self.possible_agents}
+        self.msg_len = num_drones
 
         self.encoding = {agent: {i: [int(x) for x in bin(i)[2:].zfill(self.env.get_message_space(agent).n)] for i in
                                  range(self.env.get_message_space(agent).n)} for agent in self.env.agents}

@@ -135,6 +135,10 @@ class AlwaysTrueGenerator(CustomGenerator):
         else:
             return np.array([high for _ in range(size)])
 
+    @staticmethod
+    def shuffle(a):
+        return a
+
 
 class AlwaysFalseGenerator(CustomGenerator):
     """Class that always returns an always False 'random' value"""
@@ -164,3 +168,7 @@ class AlwaysFalseGenerator(CustomGenerator):
             return low
         else:
             return low
+
+    @staticmethod
+    def shuffle(a):
+        return a.reverse()

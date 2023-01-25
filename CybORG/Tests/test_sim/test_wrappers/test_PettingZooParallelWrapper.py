@@ -64,6 +64,30 @@ def test_equal_reward():
         assert len(set(rews_tt[1].values())) == 1
 
 
+def test_red_exploit_indirect():
+    sg = DroneSwarmScenarioGenerator(num_drones=3, starting_num_red=1, max_length_data_links=7, starting_positions=np.array([np.array([5, 5]),np.array([5, 10]),np.array([5, 15])]), agent_to_drone_mapping={0: 'red', 1:'blue', 2:'blue'}, default_red_agent=SleepAgent, red_internal_only=False)
+    cyborg_raw = CybORG(scenario_generator=sg, seed=AlwaysTrueGenerator())
+    cyborg = PettingZooParallelWrapper(env=cyborg_raw)
+    red_agent = 'red_agent_0'
+    assert red_agent in cyborg.active_agents
+    blue_agent = 'blue_agent_1'
+    assert blue_agent in cyborg.active_agents
+    target_agent = 'blue_agent_2'
+    assert target_agent in cyborg.active_agents
+
+    target_obs = cyborg.env.get_observation(target_agent)
+    target_obs = [obs for obs in target_obs.values() if type(obs) in (list, dict) and 'Sessions' in obs][0]
+    target_host = target_obs['System info']['Hostname']
+    target_ip = target_obs['Interface'][0]['IP Address']
+    assert cyborg.get_observation(red_agent)[17] == 0, cyborg.get_observation(red_agent)
+    results = cyborg.env.step(agent=red_agent,
+                          action=ExploitDroneVulnerability(agent=red_agent, session=0, ip_address=target_ip))
+    assert cyborg.get_observation(red_agent)[17] == 1, cyborg.get_observation(red_agent)
+    assert cyborg.get_observation(red_agent)[0] == 0
+    # check that blue agent detected attack
+    blue_obs = cyborg.get_observation(blue_agent)
+    assert blue_obs[5] == 1
+
 def test_blue_retake_on_red():
     sg = DroneSwarmScenarioGenerator(num_drones=2, max_length_data_links=100000, starting_num_red=1, red_spawn_rate=0,
                                     starting_positions=[np.array([0, 0]), np.array([1,1])])
@@ -265,7 +289,7 @@ def test_block_and_check_IP():
     for i in range(2):
         count = 0
         for agent in cyborg.active_agents:
-            actions[agent] = 4 -count
+            actions[agent] = 4 - count
             count += 1
 
         # get position before step because obs returns old position
@@ -281,7 +305,7 @@ def test_block_and_check_IP():
         # no malicious host activity
         assert obs['blue_agent_0'][3] == 0
         # malicious network activity found because green is blocked
-        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [1, 0])
+        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [0, 1])
         # drone position
         assert all(obs['blue_agent_0'][6:8] == pos["drone_0"])
         # other drone id
@@ -299,7 +323,7 @@ def test_block_and_check_IP():
         # no malicious host activity
         assert obs['blue_agent_1'][3] == 0
         # malicious network activity
-        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [1, 0])
+        assert all(obs['blue_agent_0'][4:6] == [0, 0]) if i == 0 else all(obs['blue_agent_0'][4:6] == [0, 1])
         # drone position
         assert all(obs['blue_agent_1'][6:8] == pos["drone_1"])
         # other drone id
@@ -354,7 +378,7 @@ def test_blue_observes_red_network():
     # no malicious host activity
     assert obs[3] == 0
     # malicious network activity
-    assert all(obs[4:6] == [1, 0])
+    assert all(obs[4:6] == [0, 1])
     # drone position
     assert all(obs[6:8] == [0, 0])
     # other drone id
@@ -387,9 +411,9 @@ def test_blue_observes_red():
     # block against other drone
     assert all(obs[1:3] == [0, 0])
     # no malicious host activity
-    assert obs[3] == 1
+    assert obs[3] == 0
     # malicious network activity
-    assert all(obs[4:6] == [1, 0])
+    assert all(obs[4:6] == [0, 1])
     # drone position
     assert all(obs[6:8] == [0, 0])
     # other drone id
@@ -572,9 +596,12 @@ def test_observation(num_drones, wrapper):
                 else:
                     assert len(obs[agent]) == (num_drones*7)
             if any(dones.values()) or len(cyborg.agents) == 0:
+                assert len(obs) > 0
+                assert len(rew) > 0
+                assert len(dones) > 0
                 assert all(dones)
+                if j < 499:
+                    assert list(rew.values())[0] == - (500-j) * num_drones
                 break
-            if j > 499:
-                breakpoint()
             assert j <= 500
         cyborg.reset()

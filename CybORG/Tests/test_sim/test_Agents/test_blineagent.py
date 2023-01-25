@@ -202,7 +202,7 @@ def test_bline_resilience():
         env.step()
         obs = env.get_observation('Red')
         success = obs['success']
-        if i > 2:
+        if i > 3:
             assert success == True, f'failing on step {i}'
 
 

@@ -15,6 +15,7 @@ from CybORG import CybORG
 from CybORG.Agents import RandomAgent, DroneRedAgent, SleepAgent, RemoveBlueDrone, RetakeBlueDrone
 from CybORG.Agents.SimpleAgents.DroneRedAgent import BlockAgent, FloodAgent, LegalExploitDrone
 from CybORG.Agents.SimpleAgents.GreenDroneAgent import GreenDroneAgent
+from CybORG.Agents.SimpleAgents.RedDroneWorm import RedDroneWormAgent
 from CybORG.Simulator.Actions.Action import RemoteAction
 from CybORG.Simulator.Actions.GreenActions.SendData import SendData
 from CybORG.Simulator.Scenarios import DroneSwarmScenarioGenerator
@@ -31,7 +32,7 @@ def test_availability():
 
 
 def test_rules_agents():
-    for red_agent in [SleepAgent, DroneRedAgent, FloodAgent, RandomAgent, LegalExploitDrone]:
+    for red_agent in [SleepAgent, DroneRedAgent, FloodAgent, RandomAgent, LegalExploitDrone, RedDroneWormAgent]:
         for blue_agent in [SleepAgent, BlockAgent, RemoveBlueDrone, RetakeBlueDrone, RandomAgent]:
             sg = DroneSwarmScenarioGenerator(num_drones=18, starting_num_red=0,
                                              default_red_agent=red_agent,
@@ -88,3 +89,18 @@ def test_rules_agents():
                         f"{round(sum(reward_distribution['Blue'].values()))}, {len(blocked_green_actions)} {len([act for act in cyborg.environment_controller.routeless_actions if type(act) is SendData])} {red_agent.__name__} {blue_agent.__name__}, {j} {i}"
 
                 cyborg.reset()
+
+
+def test_blue_reward_after_spawn():
+    sg = DroneSwarmScenarioGenerator(num_drones=18, starting_num_red=0, red_internal_only=False, red_spawn_rate=1, default_red_agent=SleepAgent)
+    cyborg = CybORG(scenario_generator=sg, seed=123)
+    reward = cyborg.step('blue_agent_0').reward
+    assert len([i for i in cyborg.active_agents if 'red' in i]) == 1
+    print(reward)
+    print([cyborg.get_last_action(agent) for agent in cyborg.environment_controller.agent_interfaces.keys() if 'green' in agent and type(cyborg.get_last_action(agent)) is SendData])
+    assert reward > -len([agent for agent in cyborg.environment_controller.agent_interfaces.keys() if 'green' in agent and type(cyborg.get_last_action(agent)) is SendData])
+    reward = cyborg.step('blue_agent_0').reward
+    assert len([i for i in cyborg.active_agents if 'red' in i]) == 2
+    print(reward)
+    print([cyborg.get_last_action(agent) for agent in cyborg.environment_controller.agent_interfaces.keys() if 'green' in agent and type(cyborg.get_last_action(agent)) is SendData])
+    assert reward > -len([agent for agent in cyborg.environment_controller.agent_interfaces.keys() if 'green' in agent and type(cyborg.get_last_action(agent)) is SendData])

@@ -107,25 +107,9 @@ register_env(name="CC3", env_creator=env_creator_CC3)
 
 ## Evaluating agent performance
 
- 
+To evaluate an agent's performance please use the [evaluation script](CybORG/Evaluation/evaluation.py) and the [submission file](CybORG/Evaluation/submission/submission.py).
 
-To evaluate an agent's performance please use the [evaluation script](CybORG/Evaluation/evaluation.py). 
-
- 
-
-
-The wrap function on line 19 defines what wrappers will be used during evaluation
-```
-def wrap(env):
-    return PettingZooParallelWrapper(env=env)
-```
-The agent under evaluation is defined on line 35. 
-To evaluate an agent, extend the [BaseAgent](CybORG/Agents/SimpleAgents/BaseAgent.py). 
-We have included the [RandomAgent](CybORG/Agents/SimpleAgents/RandomAgent.py) as an example of an agent that performs random actions.
-```
-# Change this line to load your agent
-agents = {agent: RandomAgent() for agent in wrapped_cyborg.possible_agents}
-```
+Please see the [submission instructions](CybORG/Evaluation/submission/submission_readme.md) for further information on submission and evaluation of agents.
 
 ## Additional Readings
 For further guidance on the CybORG environment please refer to the [tutorial notebook series.](CybORG/Tutorial)

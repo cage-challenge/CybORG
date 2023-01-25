@@ -1,6 +1,7 @@
 import pytest
 
 from CybORG import CybORG
+from CybORG.Agents import SleepAgent
 from CybORG.Simulator.Scenarios import DroneSwarmScenarioGenerator
 
 

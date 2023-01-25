@@ -19,12 +19,20 @@ def cyborg(request):
 
 def test_random_actions(cyborg):
     for j in range(10):
+        actions = []
         for i in range(100):
+            actions.append([])
             for agent in cyborg.active_agents:
                 a = cyborg.get_last_action(agent)
+                actions[i].append(a)
                 if a is not None and type(a) not in (Sleep, InvalidAction):
                     assert a.agent == agent
                     if agent in cyborg.active_agents:
                         assert a.session in cyborg.env.environment_controller.state.sessions[agent], f"{agent} {j} {i}"
             cyborg.step()
+
+            for hostname, host in cyborg.env.environment_controller.state.hosts.items():
+                for agent in cyborg.env.environment_controller.agent_interfaces.keys():
+                    temp = [k for k, v in cyborg.env.environment_controller.state.sessions[agent].items() if v.hostname == hostname]
+                    assert temp == host.sessions[agent]
         cyborg.reset()

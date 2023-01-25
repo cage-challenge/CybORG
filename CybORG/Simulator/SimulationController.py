@@ -22,6 +22,7 @@ class SimulationController(EnvironmentController):
         self.bandwidth_usage = {}
         self.dropped_actions = []
         self.routeless_actions = []
+        self.blocked_actions = []
         super().__init__(scenario_generator, agents, np_random)
 
     def reset(self, agent=None, np_random=None):
@@ -108,31 +109,33 @@ class SimulationController(EnvironmentController):
         # check agent and session exist for each action
         actions = {agent_name: agent_action for agent_name, agent_action in actions.items() if not hasattr(agent_action, 'session') or (agent_action.agent in self.state.sessions and agent_action.session in self.state.sessions[agent_action.agent])}
 
-        # sort the actions based on priority
-        actions = {agent_name: agent_action for agent_name, agent_action in sorted(actions.items(), key=lambda item: item[1].priority)}
+        # shuffle action order to randomise which are dropped if bandwidth exceeded
+        agent_send_order = list(actions.keys())
+        self.np_random.shuffle(agent_send_order)
 
-        # calculate bandwidth usage
-        # need to get the actions and their bandwidth per host
-        remote_action = {}
+        # use bandwidth until exceeded then drop actions
         bandwidth_usage = {}
         self.routeless_actions = []
         self.blocked_actions = []
+        self.dropped_actions = []
 
-        for a in actions.values():
+        for agent in agent_send_order:
+            a = actions[agent]
             if issubclass(type(a), RemoteAction):
                 route = a.get_used_route(self.state)
                 if route is not None:
                     for host in route:
-                        if host in remote_action:
-                            remote_action[host].append(a)
-                        else:
-                            remote_action[host] = [a]
-
+                        # if blocked then action consumes no further bandwidth
+                        if host in self.state.blocks and route[0] in self.state.blocks[host]:
+                            a.blocked = host
+                            self.blocked_actions.append(a)
+                            break
+                        # otherwise action consumes bandwidth at host
                         if host in bandwidth_usage:
                             bandwidth_usage[host] += a.bandwidth_usage
                         else:
                             bandwidth_usage[host] = a.bandwidth_usage
-
+                        # and bandwidth from all surrounding hosts
                         for interface in self.state.hosts[host].interfaces:
                             if interface.interface_type == 'wireless':
                                 for h in interface.data_links:
@@ -140,28 +143,19 @@ class SimulationController(EnvironmentController):
                                         bandwidth_usage[h] += a.bandwidth_usage
                                     else:
                                         bandwidth_usage[h] = a.bandwidth_usage
-
-                        if host in self.state.blocks and route[0] in self.state.blocks[host]:
-                            a.blocked = host
-                            self.blocked_actions.append(a)
+                        # if the maximum bandwidth is exceeded then the action is droppped and doesn't continue down the route
+                        if bandwidth_usage[host] > self.max_bandwidth:
+                            self.dropped_actions.append(a)
+                            a.dropped = True
                             break
                 else:
                     a.dropped = True
                     self.routeless_actions.append(a)
         self.bandwidth_usage = dict(bandwidth_usage)
-        self.dropped_actions = []
 
-        # fail actions from action list if bandwidth is exceeded
-        for host, r_actions in remote_action.items():
-            if bandwidth_usage[host] > self.max_bandwidth:
-                deficit = bandwidth_usage[host] - self.max_bandwidth
-                dropped_action_order = self.np_random.choice(r_actions, size=len(r_actions), replace=False)
-                for dropped_action in dropped_action_order:
-                    deficit -= dropped_action.bandwidth_usage
-                    dropped_action.dropped = True
-                    self.dropped_actions.append(dropped_action)
-                    if deficit <= 0:
-                        break
+        # sort the actions based on priority
+        actions = {agent_name: agent_action for agent_name, agent_action in sorted(actions.items(), key=lambda item: item[1].priority)}
+
         return actions
 
     def get_connected_agents(self, agent: str) -> list:

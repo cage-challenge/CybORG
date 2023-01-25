@@ -37,9 +37,9 @@ class SendData(RemoteAction):
                     # Check that agent's team name contains 'red', assume modification if true
                     if 'red' in agent.lower():
                         # Iterate through list of session objects under agent
-                        for session in state.sessions[agent].values():
+                        for session in host.sessions[agent]:
                             # Check if agent has escalated privileges within session
-                            if session.username == 'root' or session.username == 'SYSTEM':
+                            if state.sessions[agent][session].username == 'root' or state.sessions[agent][session].username == 'SYSTEM':
                                 return obs
                 if other_hostname == self.blocked:
                     event = {

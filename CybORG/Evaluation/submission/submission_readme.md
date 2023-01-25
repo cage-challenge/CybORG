@@ -44,7 +44,7 @@ An examplar description can be found [here](https://arxiv.org/pdf/2211.15557.pdf
 
 # Checklist for submission
 
-Please include all of the following in your submission:
+Please include the following in your submission:
 
 - All files required to run the agents
 - a file named submission.py containing the following:
@@ -56,4 +56,4 @@ Please include all of the following in your submission:
 - A Dockerfile that creates the environment required to run your agents
 - Description of approach
 - Summary of evaluation results
-- Full evaluation results
+- (optional) Full evaluation results
