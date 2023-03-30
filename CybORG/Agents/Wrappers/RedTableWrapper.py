@@ -128,7 +128,9 @@ class RedTableWrapper(BaseWrapper):
 
     def _process_priv_esc(self, obs, hostname):
         if obs['success'] == False:
-            [info for info in self.red_info.values() if info[2] == hostname][0][4] = 'None'
+            red_info = [info for info in self.red_info.values() if info[2] == hostname]
+            if len(red_info) > 0:
+                red_info[0][4] = 'None'
         else:
             for hostid in obs:
                 if hostid == 'success':
