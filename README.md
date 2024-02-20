@@ -112,7 +112,11 @@ To evaluate an agent's performance please use the [evaluation script](CybORG/Eva
 Please see the [submission instructions](CybORG/Evaluation/submission/submission_readme.md) for further information on submission and evaluation of agents.
 
 ## Additional Readings
-For further guidance on the CybORG environment please refer to the [tutorial notebook series.](CybORG/Tutorial)
+For further guidance on the CybORG environment please refer to the [tutorial notebook series.](CybORG/Tutorial). For information on the CAGE challenges, please refer to the following pages:
+[CAGE Challenge 1](https://github.com/cage-challenge/cage-challenge-1) 
+[CAGE Challenge 2](https://github.com/cage-challenge/cage-challenge-2) 
+[CAGE Challenge 3](https://github.com/cage-challenge/cage-challenge-3) 
+[CAGE Challenge 4](https://github.com/cage-challenge/cage-challenge-4) 
 
 ## Citing this project
 ```
