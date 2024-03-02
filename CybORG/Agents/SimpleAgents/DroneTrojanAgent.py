@@ -18,7 +18,7 @@ class DroneTrojanAgent(BaseAgent):
     def get_action(self, observation, action_space):
         # TODO use poisson distribution
         if self.np_random.random() < self.spawn_rate:
-            return ActivateTrojan(hostname=f'drone_{self.np_random.randint(0, self.num_drones-1)}', agent=self.name)
+            return ActivateTrojan(hostname=f'drone_{self.np_random.randint(0, self.num_drones)}', agent=self.name)
         else:
             return Sleep()
 
