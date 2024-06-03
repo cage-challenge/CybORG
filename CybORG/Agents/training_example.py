@@ -28,7 +28,8 @@ def run_training_example(scenario):
         reward = 0
         for j in range(MAX_STEPS_PER_GAME):  # step in 1 game
             action = agent.get_action(observation, action_space)
-            next_observation, r, done, info = cyborg.step(action=action)
+            next_observation, r, terminated, truncated, info = cyborg.step(action=action)
+            done = terminated or truncated
             action_space = info.get('action_space')
             reward += r
 

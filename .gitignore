@@ -32,3 +32,5 @@ CybORG/Emulator/AWS/Config/awsconfig.ini
 *.pstats
 
 .ipynb_checkpoints/
+
+CybORG/Evaluation/

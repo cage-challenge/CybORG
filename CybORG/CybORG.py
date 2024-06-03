@@ -153,7 +153,7 @@ class CybORG (CybORGLogger):
         """
         return self.environment_controller.get_agent_state(agent_name).data
 
-    def reset(self, agent: str = None) -> Results:
+    def reset(self, agent: str = None, seed=None, **kwargs) -> Results:
         """
         Resets CybORG and gets initial observation and action-space for the specified agent.
 
@@ -172,7 +172,9 @@ class CybORG (CybORGLogger):
         Results
             The initial observation and actions of an agent.
         """
-        return self.environment_controller.reset(agent=agent)
+        if seed:
+            self.set_seed(seed)
+        return self.environment_controller.reset(agent=agent, **kwargs)
 
     def shutdown(self, **kwargs) -> bool:
         """

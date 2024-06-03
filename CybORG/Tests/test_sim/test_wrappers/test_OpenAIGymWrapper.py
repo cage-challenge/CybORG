@@ -1,6 +1,6 @@
 import pytest
 import inspect
-from gym import spaces
+from gymnasium import spaces
 from CybORG import CybORG
 from CybORG.Agents.Wrappers.OpenAIGymWrapper import OpenAIGymWrapper
 from CybORG.Agents.Wrappers.FixedFlatWrapper import FixedFlatWrapper
@@ -17,7 +17,8 @@ def test_steps():
                               env=FixedFlatWrapper(EnumActionWrapper(CybORG(path, 'sim'))))
     cyborg.reset()
     action = cyborg.action_space.sample()
-    obs, reward, done, info = cyborg.step(action)
+    obs, reward, terminated, truncated, info = cyborg.step(action)
+    done = terminated or truncated
 
     # assert isinstance(obs, object) # Redundant because everything in python is an object
     assert obs is not None
@@ -44,7 +45,8 @@ def test_steps_multi_discrete():
                               env=FixedFlatWrapper(EnumActionWrapper(CybORG(path, 'sim'))))
     cyborg.reset()
     action = cyborg.action_space.sample()
-    obs, reward, done, info = cyborg.step(action)
+    obs, reward, terminated, truncated, info = cyborg.step(action)
+    done = terminated or truncated
 
     # assert isinstance(obs, object) # Redundant because everything in python is an object
     assert obs is not None
@@ -80,7 +82,8 @@ def test_steps_random():
     for i in range(MAX_EPS):
         for j in range(MAX_STEPS_PER_GAME):
             action = cyborg.action_space.sample()
-            obs, rew, done, info = cyborg.step(action)
+            obs, rew, terminated, truncated, info = cyborg.step(action)
+            done = terminated or truncated
             if done or j == MAX_STEPS_PER_GAME-1:
                 break
         cyborg.reset()
@@ -104,7 +107,8 @@ def test_steps_random_multi_discrete():
     for i in range(MAX_EPS):
         for j in range(MAX_STEPS_PER_GAME):
             action = cyborg.action_space.sample()
-            obs, rew, done, info = cyborg.step(action)
+            obs, rew, terminated, truncated, info = cyborg.step(action)
+            done = terminated or truncated
             if done or j == MAX_STEPS_PER_GAME-1:
                 break
         cyborg.reset()
@@ -124,11 +128,12 @@ def test_get_attr(cyborg):
         assert cyborg.get_attr(attribute) == cyborg.env.get_attr(attribute)
 
 def test_get_observation(cyborg):
-    step_obs = cyborg.reset()
+    step_obs, info = cyborg.reset()
     method_obs = cyborg.get_observation(cyborg.agent_name)
     assert all(step_obs == method_obs)
 
-    step_obs, reward, done, info = cyborg.step()
+    step_obs, reward, terminated, truncated, info = cyborg.step()
+    done = terminated or truncated
     method_obs = cyborg.get_observation(cyborg.agent_name)
     assert all(step_obs == method_obs)
 

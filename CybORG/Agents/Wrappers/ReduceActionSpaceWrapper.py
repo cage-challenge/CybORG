@@ -50,6 +50,6 @@ class ReduceActionSpaceWrapper(BaseWrapper):
     def get_attr(self,attribute:str):
         return self.env.get_attr(attribute)
 
-    def reset(self, agent=None):
+    def reset(self, agent=None, **kwargs):
         self.fixed_size = {}
-        return self.env.reset(agent)
+        return self.env.reset(agent, **kwargs)

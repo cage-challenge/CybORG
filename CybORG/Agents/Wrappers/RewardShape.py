@@ -44,8 +44,8 @@ class RewardShape(BaseWrapper):
 
         return result
 
-    def reset(self, agent=None):
-        result = self.env.reset(agent)
+    def reset(self, agent=None, **kwargs):
+        result = self.env.reset(agent, **kwargs)
         self.action_buffer = deque(maxlen=2)
         self.observation_buffer = deque(maxlen=2)
         if torch.is_tensor(result.observation):

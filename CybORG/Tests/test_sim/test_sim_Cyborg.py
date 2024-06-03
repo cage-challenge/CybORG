@@ -267,7 +267,8 @@ def test_agent_train(create_cyborg_sim):
         reward = 0
         for j in range(20):
             action = agent.get_action(observation, action_space)
-            next_observation, r, done, info = cyborg.step(action)
+            next_observation, r, terminated, truncated, info = cyborg.step(action)
+            done = terminated or truncated
             action_space = info['action_space']
             reward += r
 

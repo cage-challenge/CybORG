@@ -18,8 +18,8 @@ class BaseWrapper:
         result.action_space = self.action_space_change(result.action_space)
         return result
 
-    def reset(self, agent=None):
-        result = self.env.reset(agent)
+    def reset(self, agent=None, **kwargs):
+        result = self.env.reset(agent, **kwargs)
         result.action_space = self.action_space_change(result.action_space)
         result.observation = self.observation_change(result.observation)
         return result

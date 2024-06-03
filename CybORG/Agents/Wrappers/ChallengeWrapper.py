@@ -1,4 +1,4 @@
-from gym import Env
+from gymnasium import Env
 from CybORG.Agents.Wrappers import BaseWrapper, OpenAIGymWrapper, BlueTableWrapper,RedTableWrapper,EnumActionWrapper
 
 
@@ -26,17 +26,17 @@ class ChallengeWrapper(Env,BaseWrapper):
         self.step_counter = None
 
     def step(self,action=None):
-        obs, reward, done, info = self.env.step(action=action)
+        obs, reward, terminated, truncated, info = self.env.step(action=action)
         
         self.step_counter += 1
         if self.max_steps is not None and self.step_counter >= self.max_steps:
-            done = True
+            truncated = True
 
-        return obs, reward, done, info
+        return obs, reward, terminated, truncated, info
 
-    def reset(self):
+    def reset(self, **kwargs):
         self.step_counter = 0
-        return self.env.reset()
+        return self.env.reset(**kwargs)
 
     def get_attr(self,attribute:str):
         return self.env.get_attr(attribute)

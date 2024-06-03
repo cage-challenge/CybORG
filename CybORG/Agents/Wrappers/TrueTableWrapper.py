@@ -12,10 +12,10 @@ class TrueTableWrapper(BaseWrapper):
         self.step_counter = -1
         self.observer_mode = observer_mode
 
-    def reset(self, agent=None):        
+    def reset(self, agent=None, **kwargs):        
         self.scanned_ips = set()  
         self.step_counter = -1
-        result = self.env.reset(agent)        
+        result = self.env.reset(agent, **kwargs)        
         result.observation = self.observation_change(result.observation)        
         return result      
 

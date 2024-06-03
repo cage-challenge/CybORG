@@ -1,5 +1,5 @@
 import numpy as np
-from gym import spaces, Env
+from gymnasium import spaces, Env
 from typing import Union, List
 from prettytable import PrettyTable
 
@@ -22,19 +22,24 @@ class OpenAIGymWrapper(Env, BaseWrapper):
         self.metadata = {}
         self.action = None
 
-    def step(self, action: Union[int, List[int]] = None) -> (object, float, bool, dict):
+    # 'gym' done = 'gymnasium' terminated or truncated
+    # https://gymnasium.farama.org/content/migration-guide/
+    def step(self, action: Union[int, List[int]] = None) -> tuple[object, float, bool, dict]:
         self.action = action
         result = self.env.step(self.agent_name, action)
         result.observation = self.observation_change(result.observation)
         result.action_space = self.action_space_change(result.action_space)
+        terminated = result.done
+        truncated = False
         info = vars(result)
-        return np.array(result.observation), result.reward, result.done, info
+        return np.array(result.observation), result.reward, terminated, truncated, info
 
-    def reset(self, agent=None):
-        result = self.env.reset(self.agent_name)
+    def reset(self, agent=None, **kwargs):
+        result = self.env.reset(self.agent_name, **kwargs)
         result.action_space = self.action_space_change(result.action_space)
         result.observation = self.observation_change(result.observation)
-        return np.array(result.observation)
+        # gymnasium API: observation, info = env.reset(seed=None, options={})
+        return np.array(result.observation), vars(result)
 
     def render(self):
         # TODO: If FixedFlatWrapper it will error out!
